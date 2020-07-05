@@ -74,12 +74,15 @@ class TCPServer(object):
             try:
                 recv_msg = json.loads(str(recv_data))   # 7.5
                 log.info("--------------receive successfully----------------")
+                send_data = self.handle(str(recv_msg))  # 7.5
+                log.info("tcpserver_send:"+send_data)   # 7.5
+                conn.sendall(send_data.encode())        # 7.5
             except ValueError as e:
                 conn.sendall('{"code": 0, "data": ""}'.encode())
                 log.info("---------------receive unsuccessfully-------------")
-            send_data = self.handle(str(recv_msg))  # 7.5
-            log.info("tcpserver_send:"+send_data)
-            conn.sendall(send_data.encode())
+            # send_data = self.handle(str(recv_msg))  # 7.5
+            # log.info("tcpserver_send:"+send_data)   # 7.5
+            # conn.sendall(send_data.encode())        # 7.5
 
     def listen_loop(self):
         log.info("---------------'listen_loop' called----------------------")  # net
@@ -164,9 +167,10 @@ class TCPClient(object):
         log.info("client_recv_data:"+str(recv_data))
         try:
             recv_msg = json.loads(str(recv_data))
+            self.handle(str(recv_msg))  # 7.5
         except json.decoder.JSONDecodeError as e:
             return
-        self.handle(str(recv_msg))  # 7.5
+        # self.handle(str(recv_msg))  # 7.5
 
     def handle(self, msg):
         code = msg.get("code", 0)
