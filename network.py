@@ -72,7 +72,7 @@ class TCPServer(object):
             recv_data = conn.recv(4096)
             log.info("recv_data:"+str(recv_data))
             try:
-                recv_msg = json.loads(recv_data)
+                recv_msg = json.loads(str(recv_data))
                 log.info("--------------receive successfully----------------")
             except ValueError as e:
                 conn.sendall('{"code": 0, "data": ""}'.encode())
@@ -86,7 +86,7 @@ class TCPServer(object):
         while True:
             log.info("---------------'while in lp' called----------------------")  # net
             conn, addr = self.sock.accept()
-            log.info("--------conn: " + str(conn) + "addr: " + str(addr + "--------"))
+            log.info("--------conn: " + str(conn) + "addr: " + str(addr) + "--------------")
             t = threading.Thread(target=self.handle_loop, args=(conn, addr))
             t.start()
 
