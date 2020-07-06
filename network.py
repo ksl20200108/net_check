@@ -59,7 +59,7 @@ class TCPServer(object):
     def listen(self):
         log.info("---------------'listen' called----------------------")  # net
         self.sock.bind((self.ip, self.port))
-        self.sock.listen(5)
+        self.sock.listen(125)     # 7.5
 
     def run(self):
         log.info("---------------'run' called----------------------")  # net
@@ -183,6 +183,7 @@ class TCPClient(object):
             self.handle_transaction(msg)
 
     def shake_loop(self):
+        log.info("---------------'TCPClient shake_loop' called---------------")
         while True:
             if self.txs:
                 data = [tx.serialize() for tx in self.txs]
@@ -258,6 +259,7 @@ class PeerServer(Singleton):
             self.nodes = []
 
     def nodes_find(self, p2p_server):
+        log.info("---------------'PeerServer nodes_find called-----------------'")
         local_ip = socket.gethostbyname(socket.getfqdn(socket.gethostname()))
         while True:
             nodes = p2p_server.get_nodes()
@@ -267,7 +269,9 @@ class PeerServer(Singleton):
                     port = node.port
                     if local_ip == ip:
                         continue
+                    log.info("------------will call PeerServer nodes_find-----------")
                     client = TCPClient(ip, port)
+                    log.info("-------------PeerServer nodes_find called-------------")
                     t = threading.Thread(target=client.shake_loop, args=())
                     t.start()
                     self.peers.append(client)
@@ -279,6 +283,7 @@ class PeerServer(Singleton):
             peer.add_tx(tx)
 
     def run(self, p2p_server):
+        log.info("---------------PeerServer run called-------------------------")
         t = threading.Thread(target=self.nodes_find, args=(p2p_server,))
         t.start()
 
