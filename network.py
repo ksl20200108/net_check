@@ -86,6 +86,7 @@ class TCPServer(object):
             try:
                 log.info("-----in try json loads these data: " + str(recv_data))    # 7.7
                 recv_msg = eval(recv_data.decode())   # 7.7
+                log.info(type(recv_msg))
                 log.info("--------------receive successfully----------------")
                 send_data = self.handle(str(recv_msg))  # 7.5
                 log.info("tcpserver_send:"+send_data)   # 7.5
