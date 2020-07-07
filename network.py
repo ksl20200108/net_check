@@ -53,11 +53,11 @@ class Msg(object):
         self.code = code
         self.data = data
 
-    @classmethod
-    def deserialize(cls, data):
-        code = int(data["code"])
-        data1 = data["data"]
-        return cls(code, data1)
+    @classmethod    # 7.7
+    def deserialize(cls, data): # 7.7
+        code = data["code"]     # 7.7
+        data1 = data["data"]    # 7.7
+        return cls(code, data1) # 7.7
 
 class TCPServer(object):
     def __init__(self, ip='0.0.0.0', port=listen_port):
@@ -85,7 +85,7 @@ class TCPServer(object):
                 continue    # 7.7
             try:
                 log.info("-----in try json loads these data: " + str(recv_data))    # 7.7
-                recv_msg = Msg.deserialize(recv_data.decode())   # 7.7
+                recv_msg = Msg.deserialize(eval(recv_data.decode()))   # 7.7
                 log.info("--------------receive successfully----------------")
                 send_data = self.handle(str(recv_msg))  # 7.5
                 log.info("tcpserver_send:"+send_data)   # 7.5
