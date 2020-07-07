@@ -3,4 +3,5 @@
 于是加入一行输出，查看当前数据
 2020-07-07 16:13:26,313 - kademlia - INFO - -----in try json loads these data: b'{"code": 1, "data": {"last_height": -1, "genesis_block": ""}}'
 
-发现原来是没有decode
+发现原来是MSG的object里面没有serialize和deserialize的函数
+添加并取代json.loads
