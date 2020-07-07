@@ -60,12 +60,12 @@ class TCPServer(object):
         self.port = port
 
     def listen(self):
-        log.info("---------------'listen' called----------------------")  # net
+        log.info("'listen' called")  # net
         self.sock.bind((self.ip, self.port))
         self.sock.listen(125)     # 7.5
 
     def run(self):
-        log.info("---------------'run' called----------------------")  # net
+        log.info("'run' called")  # net
         t = threading.Thread(target=self.listen_loop, args=())
         t.start()
 
@@ -74,15 +74,17 @@ class TCPServer(object):
         while True:
             recv_data = conn.recv(4096)
             log.info("recv_data:"+str(recv_data))
+            if not recv_data:   # 7.7
+                continue    # 7.7
             try:
-                recv_msg = json.loads(recv_data)   # 7.7 delete str
-                # log.info("--------------receive successfully----------------") # 7.7
+                recv_msg = json.loads(str(recv_data))   # 7.5
+                log.info("--------------receive successfully----------------")
                 send_data = self.handle(str(recv_msg))  # 7.5
                 log.info("tcpserver_send:"+send_data)   # 7.5
                 conn.sendall(send_data.encode())        # 7.5
             except ValueError as e:
                 conn.sendall('{"code": 0, "data": ""}'.encode())
-                # log.info("---------------receive unsuccessfully-------------") # 7.7
+                log.info("---------------receive unsuccessfully-------------")
             # send_data = self.handle(str(recv_msg))  # 7.5
             # log.info("tcpserver_send:"+send_data)   # 7.5
             # conn.sendall(send_data.encode())        # 7.5
@@ -263,7 +265,7 @@ class PeerServer(Singleton):
 
     def nodes_find(self, p2p_server):
         log.info("---------------'PeerServer nodes_find called-----------------'")
-        local_ip = "192.168." # socket.gethostbyname(socket.getfqdn(socket.gethostname()))
+        local_ip = "192.168.57.129" # socket.gethostbyname(socket.getfqdn(socket.gethostname()))
         while True:
             nodes = p2p_server.get_nodes()
             log.info("-------------------------get_nodes called-------------------------------")
