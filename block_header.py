@@ -19,7 +19,7 @@ class BlockHeader(object):
         self.hash = None
         self.hash_merkle_root = hash_merkle_root
         self.height = height
-        self.nonce = None
+        self.nonce = ""     # 7.7
 
     @classmethod
     def new_genesis_block_header(cls):
