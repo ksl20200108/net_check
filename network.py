@@ -85,10 +85,15 @@ class TCPServer(object):
                 continue    # 7.7
             try:
                 log.info("-----in try json loads these data: " + str(recv_data))    # 7.7
-                recv_msg = eval(recv_data.decode())   # 7.7
+                try:
+                    recv_msg = eval(recv_data.decode())   # 7.7
+                except:
+                    log.info("the null data is" + str(recv_data)) # 7.7
+                # try:
+                #     recv_msg = json.loads(recv_data.decode())
                 log.info("the type is "+ str(type(recv_msg)))
                 log.info("--------------receive successfully----------------")
-                send_data = self.handle(str(recv_msg))  # 7.5
+                send_data = self.handle(recv_msg)  # 7.7
                 log.info("tcpserver_send:"+send_data)   # 7.5
                 conn.sendall(send_data.encode())        # 7.5
             except ValueError as e:
@@ -223,7 +228,7 @@ class TCPClient(object):
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
-                time.sleep(10)
+                time.sleep(1)   # 7.7 10->1
 
 
     def handle_shake(self, msg):
