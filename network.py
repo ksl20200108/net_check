@@ -36,9 +36,12 @@ class P2p(object):
         loop.run_forever()
 
     def get_nodes(self):
+        log.info("-----------------------get into get_nodes in P2P-----------------------------")
         nodes = []
         for bucket in self.server.protocol.router.buckets:
+            log.info("--------------------------------int the for-------------------------------")
             nodes.extend(bucket.get_nodes())
+        log.info("--------------------------------will return nodes------------------------------")
         return nodes
 
 class Msg(object):
@@ -263,7 +266,7 @@ class PeerServer(Singleton):
         local_ip = socket.gethostbyname(socket.getfqdn(socket.gethostname()))
         while True:
             nodes = p2p_server.get_nodes()
-            log.info("-------------------------get_nodes called-----s--------------------------")
+            log.info("-------------------------get_nodes called-------------------------------")
             for node in nodes:
                 if node not in self.nodes:
                     ip = node.ip
