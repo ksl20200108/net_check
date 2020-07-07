@@ -263,6 +263,7 @@ class PeerServer(Singleton):
         local_ip = socket.gethostbyname(socket.getfqdn(socket.gethostname()))
         while True:
             nodes = p2p_server.get_nodes()
+            log.info("-------------------------get_nodes called-----s--------------------------")
             for node in nodes:
                 if node not in self.nodes:
                     ip = node.ip
