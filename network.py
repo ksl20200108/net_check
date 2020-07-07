@@ -55,7 +55,7 @@ class Msg(object):
 
     @classmethod
     def deserialize(cls, data):
-        code = data["code"]
+        code = int(data["code"])
         data1 = data["data"]
         return cls(code, data1)
 
