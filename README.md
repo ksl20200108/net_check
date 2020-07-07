@@ -5,3 +5,8 @@
 
 发现原来是MSG的object里面没有serialize和deserialize的函数
 添加并取代json.loads
+并用eval函数将decode得到的字符串转成字典
+
+把shake_loop沉睡的时间改为10
+
+nonce = ""
