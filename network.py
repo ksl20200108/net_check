@@ -75,7 +75,7 @@ class TCPServer(object):
             recv_data = conn.recv(4096)
             log.info("recv_data:"+str(recv_data))
             try:
-                recv_msg = json.loads(str(recv_data))   # 7.5
+                recv_msg = json.loads(recv_data)   # 7.7 delete str
                 log.info("--------------receive successfully----------------")
                 send_data = self.handle(str(recv_msg))  # 7.5
                 log.info("tcpserver_send:"+send_data)   # 7.5
@@ -170,7 +170,7 @@ class TCPClient(object):
         log.info("client_recv_data:"+str(recv_data))
         try:
             recv_msg = json.loads(str(recv_data))
-            self.handle(str(recv_msg))  # 7.5
+            self.handle(recv_msg)  # 7.7 delete str
         except json.decoder.JSONDecodeError as e:
             return
         # self.handle(str(recv_msg))  # 7.5
@@ -263,7 +263,7 @@ class PeerServer(Singleton):
 
     def nodes_find(self, p2p_server):
         log.info("---------------'PeerServer nodes_find called-----------------'")
-        local_ip = socket.gethostbyname(socket.getfqdn(socket.gethostname()))
+        local_ip = "192.168." # socket.gethostbyname(socket.getfqdn(socket.gethostname()))
         while True:
             nodes = p2p_server.get_nodes()
             log.info("-------------------------get_nodes called-------------------------------")
