@@ -74,7 +74,7 @@ class TCPServer(object):
         while True:
             recv_data = conn.recv(4096)
             log.info("recv_data:"+str(recv_data)[1:])   # 7.7
-            log.info("and the bytes are: " + recv_data) # 7.7
+            log.info("and the bytes are: " + recv_data.decode()) # 7.7
             if not recv_data:   # 7.7
                 continue    # 7.7
             try:
