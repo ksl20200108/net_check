@@ -77,6 +77,7 @@ class TCPServer(object):
             if not recv_data:   # 7.7
                 continue    # 7.7
             try:
+                log.info("-----in try json loads these data: " + str(recv_data))    # 7.7
                 recv_msg = json.loads(str(recv_data))   # 7.5
                 log.info("--------------receive successfully----------------")
                 send_data = self.handle(str(recv_msg))  # 7.5
