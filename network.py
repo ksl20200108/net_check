@@ -76,13 +76,13 @@ class TCPServer(object):
             log.info("recv_data:"+str(recv_data))
             try:
                 recv_msg = json.loads(recv_data)   # 7.7 delete str
-                log.info("--------------receive successfully----------------")
+                # log.info("--------------receive successfully----------------") # 7.7
                 send_data = self.handle(str(recv_msg))  # 7.5
                 log.info("tcpserver_send:"+send_data)   # 7.5
                 conn.sendall(send_data.encode())        # 7.5
             except ValueError as e:
                 conn.sendall('{"code": 0, "data": ""}'.encode())
-                log.info("---------------receive unsuccessfully-------------")
+                # log.info("---------------receive unsuccessfully-------------") # 7.7
             # send_data = self.handle(str(recv_msg))  # 7.5
             # log.info("tcpserver_send:"+send_data)   # 7.5
             # conn.sendall(send_data.encode())        # 7.5
