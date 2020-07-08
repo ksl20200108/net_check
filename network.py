@@ -123,7 +123,7 @@ class TCPServer(object):
             return '{"code": 0, "data":""}'
         return json.dumps(res_msg.__dict__)
 
-    def handle_handshake(self, msg):
+    def handle_handshake(self, msg):    # 78pm problem
         log.info("------server handle_handshake------") # 78pm
         block_chain = BlockChain()
         block = block_chain.get_last_block()
