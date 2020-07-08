@@ -36,7 +36,7 @@ class P2p(object):
         loop.run_forever()
 
     def get_nodes(self):
-        log.info("------get into get_nodes in P2P------")
+        log.info("------------") # 7.8 find it also important
         nodes = []
         for bucket in self.server.protocol.router.buckets:
             # log.info("------int the for------")    # 7.8
