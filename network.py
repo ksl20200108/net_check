@@ -140,6 +140,8 @@ class TCPServer(object):
                 "genesis_block": genesis_block.serialize()
             }
         msg = Msg(Msg.GET_BLOCK_MSG, data)  # 78pm
+        log.info("luangai")   # 78pm
+        conn.sendall(json.dumps(Msg(Msg.HAND_SHAKE_MSG, data).__dict__).encode())        # 78pm
         return msg
 
     def handle_get_block(self, msg):
