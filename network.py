@@ -296,6 +296,7 @@ class PeerServer(Singleton):
             log.info("-------get_nodes called------")
             for node in nodes:
                 if node not in self.nodes:
+                    log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
                     ip = node.ip
                     port = node.port
                     if local_ip == ip:
