@@ -124,6 +124,7 @@ class TCPServer(object):
         return json.dumps(res_msg.__dict__)
 
     def handle_handshake(self, msg):
+        log.info("------server handle_handshake------") # 78pm
         block_chain = BlockChain()
         block = block_chain.get_last_block()
         try:
@@ -234,7 +235,7 @@ class TCPClient(object):
                         "last_height": block.block_header.height,
                         "genesis_block": genesis_block.serialize()
                     }
-                msg = Msg(Msg.HAND_SHAKE_MSG, data)
+                msg = Msg(Msg.HAND_SHAKE_MSG, data) # 78pm
                 self.send(msg)
                 time.sleep(1)   # 7.7 10->1
 
