@@ -39,9 +39,9 @@ class P2p(object):
         log.info("------get into get_nodes in P2P------")
         nodes = []
         for bucket in self.server.protocol.router.buckets:
-            # log.info("--------------------------------int the for-------------------------------")    # 7.8
+            # log.info("------int the for------")    # 7.8
             nodes.extend(bucket.get_nodes())
-        # log.info("--------------------------------will return nodes------------------------------")   # 7.8
+        # log.info("------will return nodes------")   # 7.8
         return nodes
 
 class Msg(object):
@@ -53,11 +53,6 @@ class Msg(object):
         self.code = code
         self.data = data
 
-    # @classmethod    # 7.8
-    # def deserialize(cls, data): # 7.8
-    #     code = data["code"]     # 7.8
-    #     data1 = data["data"]    # 7.8
-    #     return cls(code, data1) # 7.8
 
 class TCPServer(object):
     def __init__(self, ip='0.0.0.0', port=listen_port):
@@ -234,7 +229,7 @@ class TCPClient(object):
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
-                time.sleep(10)   # 7.7 10->1
+                time.sleep(1)   # 7.7 10->1
 
 
     def handle_shake(self, msg):
@@ -289,17 +284,18 @@ class PeerServer(Singleton):
             self.nodes = []
 
     def nodes_find(self, p2p_server):
-        log.info("------PeerServer nodes_find called------")
+        log.info("------------")  # 7.8 find it very important
         local_ip = "192.168.57.129" # socket.gethostbyname(socket.getfqdn(socket.gethostname()))
         while True:
             nodes = p2p_server.get_nodes()
-            log.info("-------get_nodes called------")
+            log.info("-------------")     # 7.8 find it very important
             for node in nodes:
                 if node not in self.nodes:
                     log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
                     ip = node.ip
                     port = node.port
                     if local_ip == ip:
+                        log.info("------local_ip==ip------")
                         continue
                     # log.info("------will call PeerServer nodes_find------")   # 7.8
                     client = TCPClient(ip, port)
