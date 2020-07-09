@@ -142,7 +142,7 @@ class TCPServer(object):
             }
         msg = Msg(Msg.GET_BLOCK_MSG, data)  # 78pm
         log.info("------server send get_block_msg------")   # 78pm
-        conn.sendall(json.dumps(Msg(Msg.HAND_SHAKE_MSG, data).__dict__).encode())        # 78pm
+        # conn.sendall(json.dumps(Msg(Msg.HAND_SHAKE_MSG, data).__dict__).encode())        # 78pm
         return msg
 
     def handle_get_block(self, msg):
@@ -192,7 +192,8 @@ class TCPClient(object):
         log.info("client_recv_data:"+str(recv_data))
         try:
             log.info("------client try loads and handle data------")    # 78pm
-            recv_msg = json.loads(str(recv_data))
+            # recv_msg = json.loads(str(recv_data)) # 7.9
+            recv_msg = eval(recv_data.decode()) # 7.9
             self.handle(recv_msg)  # 7.7 delete str
             log.info("------client had loads and handle data------")
         except json.decoder.JSONDecodeError as e:

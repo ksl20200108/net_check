@@ -1,2 +1,6 @@
 发现问题：发送区块信息的时候code应该是2而不是1
 再者TCPServer和TCPClient很多功能重复，两者的界限不明显
+
+发现问题：recv_msg的问题不止一处，7.7只改了一处
+如果有问题可以加两个try，一个用json.loads，第二个用eval
+上传程序的时候看清楚branch
