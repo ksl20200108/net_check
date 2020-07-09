@@ -201,8 +201,8 @@ class TCPClient(object):
         # self.handle(str(recv_msg))  # 7.5
 
     def handle(self, msg):
-        code = msg.get("code", 0)
-        log.info("recv code:"+str(code))
+        code = msg.get("client handle: msg code", 0)
+        log.info("client handle: recv code:"+str(code))
         if code == Msg.HAND_SHAKE_MSG:
             self.handle_shake(msg)
         elif code == Msg.GET_BLOCK_MSG:
@@ -263,6 +263,7 @@ class TCPClient(object):
     def handle_get_block(self, msg):
         log.info("------client handle_get_block------") # 7.8
         data = msg.get("data", "")
+        log.info("will deserialize these data: " + msg)    # 7.9
         block = Block.deserialize(data)
         bc = BlockChain()
         try:
