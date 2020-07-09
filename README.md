@@ -4,3 +4,6 @@
 发现问题：recv_msg的问题不止一处，7.7只改了一处
 如果有问题可以加两个try，一个用json.loads，第二个用eval
 上传程序的时候看清楚branch
+
+GET_BLOCK统一改为发送自己的区块给对方
+添加SEND_BLOCK用于接收对方的区块

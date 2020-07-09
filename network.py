@@ -49,6 +49,7 @@ class Msg(object):
     HAND_SHAKE_MSG = 1
     GET_BLOCK_MSG = 2
     TRANSACTION_MSG = 3
+    SEND_BLOCK_MSG = 4  # 7.9
     def __init__(self, code, data):
         self.code = code
         self.data = data
@@ -87,7 +88,7 @@ class TCPServer(object):
                 # try:  # 7.7
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
-                log.info("------receive successfully------")
+                log.info("------server handle loop receive------")  # 7.9
                 send_data = self.handle(recv_msg)  # 7.7
                 log.info("tcpserver_send:"+send_data)   # 7.5
                 conn.sendall(send_data.encode())        # 7.5
@@ -119,28 +120,44 @@ class TCPServer(object):
         elif code == Msg.TRANSACTION_MSG:
             log.info("------receive TRANSACTION_GSG------") # 7.8
             res_msg = self.handle_transaction(msg)
+        elif code == Msg.SEND_BLOCK_MSG:    # 7.9
+            pass    # 7.9
         else:
             return '{"code": 0, "data":""}'
         return json.dumps(res_msg.__dict__)
 
     def handle_handshake(self, msg):    # 78pm problem
         log.info("------server handle_handshake------") # 78pm
+        data = msg.get("data", "")  # 7.9
+        last_height = data.get("last_height", 0)    # 7.9
         block_chain = BlockChain()
         block = block_chain.get_last_block()
-        try:
-            genesis_block = block_chain[0]
-        except IndexError as e:
-            genesis_block = None
-        data = {
-            "last_height": -1,
-            "genesis_block": ""
-        }
-        if genesis_block:
-            data = {
-                "last_height": block.block_header.height,
-                "genesis_block": genesis_block.serialize()
-            }
-        msg = Msg(Msg.GET_BLOCK_MSG, data)  # 78pm
+        # try:                                              # 7.9
+        #     genesis_block = block_chain[0]                # 7.9
+        # except IndexError as e:                           # 7.9
+        #     genesis_block = None                          # 7.9
+        # data = {                                          # 7.9
+        #     "last_height": -1,                            # 7.9
+        #     "genesis_block": ""                           # 7.9
+        # }                                                 # 7.9
+        # if genesis_block:                                 # 7.9
+        #     data = {                                      # 7.9
+        #         "last_height": block.block_header.height,  # 7.9
+        #         "genesis_block": genesis_block.serialize()  # 7.9
+        #     }                                             # 7.9
+        if block:                                           # 7.9
+            local_last_height = block.block_header.height   # 7.9
+        else:                                               # 7.9
+            local_last_height = -1                          # 7.9
+        log.info("local_last_height %d, last_height %d" %(local_last_height, last_height))  # 7.9
+        if local_last_height >= last_height:                # 7.9
+            return                                          # 7.9
+        start_height = 0 if local_last_height == -1 else local_last_height                  # 7.9
+        for i in range(start_height, last_height+1):        # 7.9
+            log.info("------client handle_shake send block msg------")                      # 7.9
+            send_msg = Msg(Msg.GET_BLOCK_MSG, i)            # 7.9
+            self.send(send_msg)                             # 7.9
+        # msg = Msg(Msg.GET_BLOCK_MSG, data)  # 7.9
         log.info("------server send get_block_msg------")   # 78pm
         # conn.sendall(json.dumps(Msg(Msg.HAND_SHAKE_MSG, data).__dict__).encode())        # 78pm
         return msg
@@ -171,6 +188,9 @@ class TCPServer(object):
         # log.info("add block")   # change
         msg = Msg(Msg.NONE_MSG, "")
         return msg
+    
+    def handle_send_block(self, msg):   # 7.9
+        pass    # 7.9
 
 
 class TCPClient(object):
@@ -209,6 +229,8 @@ class TCPClient(object):
             self.handle_get_block(msg)
         elif code == Msg.TRANSACTION_MSG:
             self.handle_transaction(msg)
+        elif code == Msg.SEND_BLOCK_MSG:    # 7.9
+            pass    # 7.9
 
     def shake_loop(self):
         # log.info("------'client shake_loop'------") # 7.8
@@ -285,6 +307,10 @@ class TCPClient(object):
             # bc.add_block(tx_pool.txs)   # change
             # log.info("mined a block")   # change
             # tx_pool.clear() # change
+    
+    def handle_send_block(self, msg):   # 7.9
+        pass    # 7.9
+    
     def close(self):
         self.sock.close()
 
