@@ -263,7 +263,8 @@ class TCPClient(object):
     def handle_get_block(self, msg):
         log.info("------client handle_get_block------") # 7.8
         data = msg.get("data", "")
-        log.info("will deserialize these data: " + msg)    # 7.9
+        log.info("------deserialize these data: " + msg + "------")    # 7.9
+        log.info("------data type" + type(msg) + "------")  # 7.9
         block = Block.deserialize(data)
         bc = BlockChain()
         try:
