@@ -108,6 +108,7 @@ class TCPServer(object):
             t.start()
 
     def handle(self, msg):
+        # log.info("------tcpserver handle msg------")  # 7.8
         code = msg.get("code", 0)
         log.info("code:"+str(code))
         if code == Msg.HAND_SHAKE_MSG:
@@ -122,7 +123,8 @@ class TCPServer(object):
             return '{"code": 0, "data":""}'
         return json.dumps(res_msg.__dict__)
 
-    def handle_handshake(self, msg):
+    def handle_handshake(self, msg):    # 78pm problem
+        log.info("------server handle_handshake------") # 78pm
         block_chain = BlockChain()
         block = block_chain.get_last_block()
         try:
@@ -138,7 +140,9 @@ class TCPServer(object):
                 "last_height": block.block_header.height,
                 "genesis_block": genesis_block.serialize()
             }
-        msg = Msg(Msg.HAND_SHAKE_MSG, data)
+        msg = Msg(Msg.GET_BLOCK_MSG, data)  # 78pm
+        log.info("------server send get_block_msg------")   # 78pm
+        conn.sendall(json.dumps(Msg(Msg.HAND_SHAKE_MSG, data).__dict__).encode())        # 78pm
         return msg
 
     def handle_get_block(self, msg):
@@ -177,6 +181,7 @@ class TCPClient(object):
         self.sock.connect((ip, port))
 
     def add_tx(self, tx):
+        log.info("------client add_tx------")   # 78pm
         self.txs.append(tx)
 
     def send(self, msg):
@@ -186,8 +191,10 @@ class TCPClient(object):
         recv_data = self.sock.recv(4096)
         log.info("client_recv_data:"+str(recv_data))
         try:
+            log.info("------client try loads and handle data------")    # 78pm
             recv_msg = json.loads(str(recv_data))
             self.handle(recv_msg)  # 7.7 delete str
+            log.info("------client had loads and handle data------")
         except json.decoder.JSONDecodeError as e:
             return
         # self.handle(str(recv_msg))  # 7.5
@@ -206,6 +213,7 @@ class TCPClient(object):
         # log.info("------'client shake_loop'------") # 7.8
         while True:
             if self.txs:
+                log.info("------client server has txs------")   # 78pm
                 data = [tx.serialize() for tx in self.txs]
                 msg = Msg(Msg.TRANSACTION_MSG, data)
                 self.send(msg)
@@ -227,12 +235,13 @@ class TCPClient(object):
                         "last_height": block.block_header.height,
                         "genesis_block": genesis_block.serialize()
                     }
-                msg = Msg(Msg.HAND_SHAKE_MSG, data)
+                msg = Msg(Msg.HAND_SHAKE_MSG, data) # 78pm
                 self.send(msg)
                 time.sleep(1)   # 7.7 10->1
 
 
     def handle_shake(self, msg):
+        log.info("------client handle_shake------") # 78pm
         data = msg.get("data", "")
         last_height = data.get("last_height", 0)
         block_chain = BlockChain()
@@ -246,7 +255,8 @@ class TCPClient(object):
             return
         start_height = 0 if local_last_height == -1 else local_last_height
         for i in range(start_height, last_height+1):
-            send_msg = Msg(Msg.GET_BLOCK_MSG, i)
+            log.info("------client handle_shake send block msg------")  # 78pm
+            send_msg = Msg(Msg.GET_BLOCK_MSG, i)    # 78pm but unchanged
             self.send(send_msg)
 
     def handle_get_block(self, msg):
@@ -308,6 +318,7 @@ class PeerServer(Singleton):
             time.sleep(1)
 
     def broadcast_tx(self, tx):
+        log.info("------peerserver broadcast_tx------")  # 78pm
         for peer in self.peers:
             peer.add_tx(tx)
 
