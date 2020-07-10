@@ -121,13 +121,9 @@ class TCPServer(object):
         elif code == Msg.TRANSACTION_MSG:
             log.info("------server receive TRANSACTION_MSG------")
             res_msg = self.handle_transaction(msg)
-        elif code == Msg.FALL_BEHIND_MSG: # 7.10
-            log.info("------server receive FALL_BEHIND_MSG------")
-            self.handle_fall_behind(conn, addr)
-            res_msg = None
         elif code == Msg.SYNCHRONIZE_MSG:   # 7.10
             log.info("------server receive SYNCHRONIZE_MSG------")
-            self.handle_synchronize(conn, addr)
+            self.handle_synchronize(msg, conn, addr)
             res_msg = None
         else:
             return '{"code": 0, "data":""}'
@@ -204,13 +200,14 @@ class TCPServer(object):
         msg = Msg(Msg.NONE_MSG, "")
         return msg
     
-    def handle_synchronize(self, conn, addr):   # 7.10
+    def handle_synchronize(self, msg, conn, addr):   # 7.10
         data = msg.get("data", "")
         block = Block.deserialize(data)
         bc = BlockChain()
         try:
             bc.add_block_from_peers(block)
             log.info("------server handle_get_block add_block_from_peers------")
+            # problem
         except ValueError as e:
             log.info("------server handle_get_block failed to add_block_from_peers------")
             log.info(str(e))
@@ -338,7 +335,7 @@ class TCPClient(object):
         block_chain = BlockChain()
         block = block_chain.get_block_by_height(height)
         data = block.serialize()
-        msg = Msg(Msg.GET_BLOCK_MSG, data)
+        msg = Msg(Msg.SYNCHRONIZE_MSG, data)
         self.send(msg)
 
     def close(self):
