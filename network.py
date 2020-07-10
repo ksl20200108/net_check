@@ -106,7 +106,7 @@ class TCPServer(object):
             t.start()
 
     def handle(self, msg):
-        code = msg.get("------server handle: code", 0)
+        code = msg.get("code", 0)
         log.info("code:"+str(code))
         if code == Msg.HAND_SHAKE_MSG:
             log.info("------server receive HAND_SHAKE_MSG------")   # 7.10
@@ -149,6 +149,7 @@ class TCPServer(object):
         log.info("------server handle_get_block: get_block_by_height------")   # 7.8
         data = block.serialize()
         msg = Msg(Msg.GET_BLOCK_MSG, data)
+        log.info("------server send get_block msg------")   # 7.10
         return msg
 
     def handle_transaction(self, msg):
@@ -198,7 +199,7 @@ class TCPClient(object):
         # self.handle(str(recv_msg))  # 7.5
 
     def handle(self, msg):
-        code = msg.get("client handle: msg code", 0)
+        code = msg.get("code", 0)
         log.info("client handle: recv code:"+str(code))
         if code == Msg.HAND_SHAKE_MSG:
             self.handle_shake(msg)
@@ -260,8 +261,8 @@ class TCPClient(object):
     def handle_get_block(self, msg):
         log.info("------client handle_get_block------") # 7.8
         data = msg.get("data", "")
-        log.info("------deserialize these data: " + msg + "------")    # 7.10
-        log.info("------data type" + type(msg) + "------")  # 7.10
+        # log.info("------deserialize these data: " + msg + "------")    # 7.10
+        # log.info("------data type" + type(msg) + "------")  # 7.10
         block = Block.deserialize(data)
         bc = BlockChain()
         try:
