@@ -147,7 +147,9 @@ class TCPServer(object):
             local_last_height = block.block_header.height
         else:
             local_last_height = -1
+        log.info("client local_last_height %d, last_height %d" %(local_last_height, last_height))
         if local_last_height >= last_height:
+            log.info("------server handle_handshake precede------")
             try:
                 genesis_block = block_chain[0]
             except IndexError as e:
@@ -165,8 +167,10 @@ class TCPServer(object):
             send_data = json.dumps(msg.__dict__)
             conn.sendall(send_data.encode())
         else:
+            log.info("------server handle_handshake fall behind------")
             start_height = 0 if local_last_height == -1 else local_last_height
             for i in range(start_height, last_height+1):
+                log.info("------server handle_handshake synchronize for------")
                 send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
                 send_data = json.dumps(send_msg.__dict__)
                 conn.sendall(send_data.encode())
@@ -291,8 +295,9 @@ class TCPClient(object):
         else:
             local_last_height = -1
         log.info("client local_last_height %d, last_height %d" %(local_last_height, last_height))
-        if local_last_height >= last_height:
+        if local_last_height > last_height: # pass
             log.info("------error shake------")
+            log.info("client local_last_height %d, last_height %d" %(local_last_height, last_height))
         start_height = 0 if local_last_height == -1 else local_last_height
         for i in range(start_height, last_height+1):
             log.info("------client handle_shake send block msg------")  # 7.10
