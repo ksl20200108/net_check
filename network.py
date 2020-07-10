@@ -207,8 +207,7 @@ class TCPServer(object):
         try:
             bc.add_block_from_peers(block)
             log.info("------server handle_get_block add_block_from_peers------")
-            send_msg = '{"code": 0, "data":""}'
-            send_data = json.dumps(send_msg.__dict__)
+            send_data = '{"code": 0, "data":""}'
             conn.sendall(send_data.encode())
         except ValueError as e:
             log.info("------server handle_get_block failed to add_block_from_peers------")
