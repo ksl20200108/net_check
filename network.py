@@ -89,8 +89,9 @@ class TCPServer(object):
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
                 log.info("------server handle loop receive------")  #
                 send_data = self.handle(recv_msg, conn, addr)  # 7.10
-                log.info("tcpserver_send:"+send_data)   # 7.10
-                conn.sendall(send_data.encode())        # 7.10
+                if send_data:
+                    log.info("tcpserver_send:"+send_data)   # 7.10
+                    conn.sendall(send_data.encode())        # 7.10
             except ValueError as e:
                 conn.sendall('{"code": 0, "data": ""}'.encode())
                 log.info("------receive Unsuccessfully------")
@@ -134,7 +135,7 @@ class TCPServer(object):
         if res_msg:
             return json.dumps(res_msg.__dict__)
         else:
-            return '{"code": 0, "data":""}'
+            return None
 
     def handle_handshake(self, msg, conn, addr):
         log.info("------server handle_handshake------") # 7.10
