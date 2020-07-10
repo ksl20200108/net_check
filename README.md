@@ -1,2 +1,9 @@
-发现问题：发送区块信息的时候code应该是2而不是1
-再者TCPServer和TCPClient很多功能重复，两者的界限不明显
+改动server和client
+
+pass 可删
+
+problem 继续修改
+
+client genesis_block还是有问题，主要在server处理数据方面
+
+此版本同步区块和交易成功
