@@ -174,6 +174,7 @@ class TCPServer(object):
                 send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
                 send_data = json.dumps(send_msg.__dict__)
                 conn.sendall(send_data.encode())
+                log.info("------server synchronize already send------")
 
     def handle_get_block(self, msg):
         log.info("------server handle_get_block------")   # 7.8
@@ -252,6 +253,8 @@ class TCPClient(object):
             self.handle_get_block(msg)
         elif code == Msg.TRANSACTION_MSG:
             self.handle_transaction(msg)
+        elif code == Msg.SYNCHRONIZE_MSG:   # 7.10
+            self.handle_synchronize(msg)    # 7.10
 
     def shake_loop(self):
         # log.info("------'client shake_loop'------") # 7.8
