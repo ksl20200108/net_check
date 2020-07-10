@@ -106,15 +106,16 @@ class TCPServer(object):
             t.start()
 
     def handle(self, msg):
-        code = msg.get("server handle: code", 0)
+        code = msg.get("------server handle: code", 0)
         log.info("code:"+str(code))
         if code == Msg.HAND_SHAKE_MSG:
+            log.info("------server receive HAND_SHAKE_MSG------")   # 7.10
             res_msg = self.handle_handshake(msg)    # what to do
         elif code == Msg.GET_BLOCK_MSG:
-            log.info("------receive GET_BLOCK_MSG------")   # 7.8
+            log.info("------server receive GET_BLOCK_MSG------")   # 7.10
             res_msg = self.handle_get_block(msg)
         elif code == Msg.TRANSACTION_MSG:
-            log.info("------receive TRANSACTION_GSG------") # 7.8
+            log.info("------server receive TRANSACTION_MSG------") # 7.10
             res_msg = self.handle_transaction(msg)
         else:
             return '{"code": 0, "data":""}'
@@ -180,9 +181,10 @@ class TCPClient(object):
         self.txs.append(tx)
 
     def send(self, msg):
+        log.info("------client send------") # 7.10
         data = json.dumps(msg.__dict__)
         self.sock.sendall(data.encode())
-        log.info("send:"+data)
+        log.info("client send:"+data)
         recv_data = self.sock.recv(4096)
         log.info("client_recv_data:"+str(recv_data))
         try:
