@@ -106,7 +106,7 @@ class TCPServer(object):
             t.start()
 
     def handle(self, msg):
-        code = msg.get("code", 0)
+        code = msg.get("server handle: code", 0)
         log.info("code:"+str(code))
         if code == Msg.HAND_SHAKE_MSG:
             res_msg = self.handle_handshake(msg)    # what to do
@@ -141,7 +141,7 @@ class TCPServer(object):
         return msg
 
     def handle_get_block(self, msg):
-        log.info("------into server handle_get_block------")   # 7.8
+        log.info("------server handle_get_block------")   # 7.8
         height = msg.get("data", 1)
         block_chain = BlockChain()
         block = block_chain.get_block_by_height(height)
@@ -151,7 +151,7 @@ class TCPServer(object):
         return msg
 
     def handle_transaction(self, msg):
-        log.info("------into server handel _transaction------")    # 7.8
+        log.info("------server handel _transaction------")    # 7.8
         tx_pool = TxPool()
         txs = msg.get("data", {})
         for tx_data in txs:
