@@ -48,8 +48,7 @@ class Msg(object):
     HAND_SHAKE_MSG = 1
     GET_BLOCK_MSG = 2
     TRANSACTION_MSG = 3
-    # FALL_BEHIND_MSG = 4 # pass
-    # SYNCHRONIZE_MSG = 5 # pass
+    SYNCHRONIZE_MSG = 4
     def __init__(self, code, data):
         self.code = code
         self.data = data
@@ -89,9 +88,9 @@ class TCPServer(object):
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
                 log.info("------server handle loop receive------")  #
-                send_data = self.handle(recv_msg)  # 7.7
-                log.info("tcpserver_send:"+send_data)   # 7.5
-                conn.sendall(send_data.encode())        # 7.5
+                send_data = self.handle(recv_msg, conn, addr)  # 7.10
+                log.info("tcpserver_send:"+send_data)   # 7.10
+                conn.sendall(send_data.encode())        # 7.10
             except ValueError as e:
                 conn.sendall('{"code": 0, "data": ""}'.encode())
                 log.info("------receive Unsuccessfully------")
@@ -108,44 +107,68 @@ class TCPServer(object):
             t = threading.Thread(target=self.handle_loop, args=(conn, addr))
             t.start()
 
-    def handle(self, msg):
+    def handle(self, msg, conn, addr):  # 7.10
         code = msg.get("code", 0)
         log.info("code:"+str(code))
         if code == Msg.HAND_SHAKE_MSG:
-            log.info("------server receive HAND_SHAKE_MSG------")   # 7.10
-            res_msg = self.handle_handshake(msg)    # what to do
+            log.info("------server receive HAND_SHAKE_MSG------")
+            self.handle_handshake(msg, conn, addr)  # 7.10
+            res_msg = None  # 7.10
         elif code == Msg.GET_BLOCK_MSG:
-            log.info("------server receive GET_BLOCK_MSG------")   # 7.10
+            log.info("------server receive GET_BLOCK_MSG------")
             res_msg = self.handle_get_block(msg)
         elif code == Msg.TRANSACTION_MSG:
-            log.info("------server receive TRANSACTION_MSG------") # 7.10
+            log.info("------server receive TRANSACTION_MSG------")
             res_msg = self.handle_transaction(msg)
-        # elif code == Msg.FALL_BEHIND_MSG: # pass
-            # log.info("------server receive FALL_BEHIND_MSG------")  # pass
-            # res_msg = self.handle_fall_behind() # pass
+        elif code == Msg.FALL_BEHIND_MSG: # 7.10
+            log.info("------server receive FALL_BEHIND_MSG------")
+            self.handle_fall_behind(conn, addr)
+            res_msg = None
+        elif code == Msg.SYNCHRONIZE_MSG:   # 7.10
+            log.info("------server receive SYNCHRONIZE_MSG------")
+            self.handle_synchronize(conn, addr)
+            res_msg = None
         else:
             return '{"code": 0, "data":""}'
-        return json.dumps(res_msg.__dict__)
 
-    def handle_handshake(self, msg):
+        if res_msg:
+            return json.dumps(res_msg.__dict__)
+        else:
+            return '{"code": 0, "data":""}'
+
+    def handle_handshake(self, msg, conn, addr):
         log.info("------server handle_handshake------") # 7.10
+        data = msg.get("data", "")
+        last_height = data.get("last_height", 0)
         block_chain = BlockChain()
         block = block_chain.get_last_block()
-        try:
-            genesis_block = block_chain[0]
-        except IndexError as e:
-            genesis_block = None
-        data = {
-            "last_height": -1,
-            "genesis_block": ""
-        }
-        if genesis_block:
+        if block:
+            local_last_height = block.block_header.height
+        else:
+            local_last_height = -1
+        if local_last_height >= last_height:
+            try:
+                genesis_block = block_chain[0]
+            except IndexError as e:
+                genesis_block = None
             data = {
-                "last_height": block.block_header.height,
-                "genesis_block": genesis_block.serialize()
+                "last_height": -1,
+                "genesis_block": ""
             }
-        msg = Msg(Msg.HAND_SHAKE_MSG, data)
-        return msg
+            if genesis_block:
+                data = {
+                    "last_height": block.block_header.height,
+                    "genesis_block": genesis_block.serialize()
+                }
+            msg = Msg(Msg.HAND_SHAKE_MSG, data)
+            send_data = json.dumps(msg.__dict__)
+            conn.sendall(send_data.encode())
+        else:
+            start_height = 0 if local_last_height == -1 else local_last_height
+            for i in range(start_height, last_height+1):
+                send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
+                send_data = json.dumps(send_msg.__dict__)
+                conn.sendall(send_data.encode())
 
     def handle_get_block(self, msg):
         log.info("------server handle_get_block------")   # 7.8
@@ -174,26 +197,17 @@ class TCPServer(object):
         # log.info("add block")   # change
         msg = Msg(Msg.NONE_MSG, "")
         return msg
-
-    # def handle_fall_behind(self, msg):  # pass
-    #     log.info("------server handle fall_behind------")
-    #     data = msg.get("data", "")
-    #     last_height = data.get("last_height", 0)
-    #     block_chain = BlockChain()
-    #     block = block_chain.get_last_block()
-    #     if block:
-    #         local_last_height = block.block_header.height
-    #     else:
-    #         local_last_height = -1
-    #     log.info("server local_last_height %d, last_height %d" %(local_last_height, last_height))
-    #     if local_last_height >= last_height:
-    #         self.fall_behind()    # 7.10
-    #         # return
-    #     start_height = 0 if local_last_height == -1 else local_last_height
-    #     for i in range(start_height, last_height+1):
-    #         log.info("------server handle_shake send block msg------")  # 7.10
-    #         send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
-            
+    
+    def handle_synchronize(self, conn, addr):   # 7.10
+        data = msg.get("data", "")
+        block = Block.deserialize(data)
+        bc = BlockChain()
+        try:
+            bc.add_block_from_peers(block)
+            log.info("------server handle_get_block add_block_from_peers------")
+        except ValueError as e:
+            log.info("------server handle_get_block failed to add_block_from_peers------")
+            log.info(str(e))
 
 
 class TCPClient(object):
@@ -277,8 +291,7 @@ class TCPClient(object):
             local_last_height = -1
         log.info("client local_last_height %d, last_height %d" %(local_last_height, last_height))
         if local_last_height >= last_height:
-            # self.fall_behind()    # pass
-            return
+            log.info("------error shake------")
         start_height = 0 if local_last_height == -1 else local_last_height
         for i in range(start_height, last_height+1):
             log.info("------client handle_shake send block msg------")  # 7.10
@@ -310,25 +323,14 @@ class TCPClient(object):
             # bc.add_block(tx_pool.txs)   # change
             # log.info("mined a block")   # change
             # tx_pool.clear() # change
-
-    # def fall_behind(self):                      # pass
-    #     block_chain = BlockChain()              # 7.10
-    #     block = block_chain.get_last_block()    # 7.10
-    #     try:
-    #         genesis_block = block_chain[0]      # 7.10
-    #     except IndexError as e:                 # 7.10
-    #         genesis_block = None                # 7.10
-    #     data = {                                # 7.10
-    #         "last_height": -1,                  # 7.10
-    #         "genesis_block": ""                 # 7.10
-    #     }                                       # 7.10
-    #     if genesis_block:                       # 7.10
-    #         data = {
-    #             "last_height": block.block_header.height,
-    #             "genesis_block": genesis_block.serialize()
-    #         }
-    #     msg = Msg.(Msg.FALL_BEHIND_MSG, data)
-    #     self.send(msg)
+    
+    def handle_synchronize(self, msg):  # 7.10
+        height = msg.get("data", 1)
+        block_chain = BlockChain()
+        block = block_chain.get_block_by_height(height)
+        data = block.serialize()
+        msg = Msg(Msg.GET_BLOCK_MSG, data)
+        self.send(msg)
 
     def close(self):
         self.sock.close()
