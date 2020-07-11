@@ -34,8 +34,8 @@ class ProofOfWork(object):
             hash_hex = utils.sum256_hex(data)
 
             hash_val = int(hash_hex, 16)
-            sys.stdout.write("data: %s\n" % data)
-            sys.stdout.write("try nonce == %d\thash_hex == %s \n" % (nonce, hash_hex))
+            # sys.stdout.write("data: %s\n" % data)
+            # sys.stdout.write("try nonce == %d\thash_hex == %s \n" % (nonce, hash_hex))
             if (hash_val < self._target_bits):
                 found = True
                 break
@@ -45,7 +45,7 @@ class ProofOfWork(object):
             # print('Found nonce == %d' % nonce)  # change delete
             pass    # change
         else:
-            print('Not Found nonce')
+            # print('Not Found nonce')
             raise NonceNotFoundError('nonce not found')
         return nonce, hash_hex
 
