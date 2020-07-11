@@ -5,7 +5,7 @@ import logging
 import asyncio
 import socket
 import json
-import pdb  # 7.10
+import pdb  # 7.11
 
 from kademlia.network import Server
 from block_chain import BlockChain
@@ -73,6 +73,7 @@ class TCPServer(object):
     def handle_loop(self, conn, addr):
         # log.info("------'handle_loop' called------")  # 7.8
         while True:
+            log.info("------------")    # 7.11 
             recv_data = conn.recv(4096)
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8

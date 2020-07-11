@@ -3,6 +3,7 @@
 import sys
 import utils
 from errors import NonceNotFoundError
+import pdb  # 7.11
 
 class ProofOfWork(object):
     """
@@ -34,8 +35,8 @@ class ProofOfWork(object):
             hash_hex = utils.sum256_hex(data)
 
             hash_val = int(hash_hex, 16)
-            # sys.stdout.write("data: %s\n" % data)
-            # sys.stdout.write("try nonce == %d\thash_hex == %s \n" % (nonce, hash_hex))
+            # sys.stdout.write("data: %s\n" % data) # 7.11
+            # sys.stdout.write("try nonce == %d\thash_hex == %s \n" % (nonce, hash_hex))    # 7.11
             if (hash_val < self._target_bits):
                 found = True
                 break
