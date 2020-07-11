@@ -139,11 +139,13 @@ class TCPServer(object):
         last_height = data.get("last_height", 0)
         block_chain = BlockChain()
         block = block_chain.get_last_block()
+
         if block:
             local_last_height = block.block_header.height
         else:
             local_last_height = -1
         log.info("client local_last_height %d, last_height %d" %(local_last_height, last_height))
+        
         if local_last_height >= last_height:
             log.info("------server handle_handshake precede------")
             try:
@@ -162,6 +164,7 @@ class TCPServer(object):
             msg = Msg(Msg.HAND_SHAKE_MSG, data)
             send_data = json.dumps(msg.__dict__)
             conn.sendall(send_data.encode())
+            log.info("------server handle_handshake precede send msg------")
 
         elif local_last_height < last_height:
             log.info("------server handle_handshake fall behind------")
