@@ -306,25 +306,25 @@ class TCPClient(object):
                 log.info("------client handle_shake send block msg------")  # 7.10
                 send_msg = Msg(Msg.GET_BLOCK_MSG, i)
                 self.send(send_msg)
-        else:   # 7.11
-            block_chain = BlockChain()
-            block = block_chain.get_last_block()
-            try:
-                genesis_block = block_chain[0]
-            except IndexError as e:
-                genesis_block = None
-            data = {
-                "last_height": -1,
-                "genesis_block": ""
-            }
-            if genesis_block:
-                data = {
-                    "last_height": block.block_header.height,
-                    "genesis_block": genesis_block.serialize()
-                }
-            msg = Msg(Msg.HAND_SHAKE_MSG, data)
-            self.send(msg)
-            time.sleep(1)
+        # else:   # 7.11
+        #     block_chain = BlockChain()
+        #     block = block_chain.get_last_block()
+        #     try:
+        #         genesis_block = block_chain[0]
+        #     except IndexError as e:
+        #         genesis_block = None
+        #     data = {
+        #         "last_height": -1,
+        #         "genesis_block": ""
+        #     }
+        #     if genesis_block:
+        #         data = {
+        #             "last_height": block.block_header.height,
+        #             "genesis_block": genesis_block.serialize()
+        #         }
+        #     msg = Msg(Msg.HAND_SHAKE_MSG, data)
+        #     self.send(msg)
+        #     time.sleep(10)
 
     def handle_get_block(self, msg):
         log.info("------client handle_get_block------") # 7.8
