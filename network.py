@@ -222,6 +222,8 @@ class TCPClient(object):
     def __init__(self, ip, port):
         self.txs = []
         self.sock = socket.socket()
+        self.ip = ip    # 7.11
+        self.port = port    # 7.11
         log.info("connect ip:"+ip+"\tport:"+str(port))
         self.sock.connect((ip, port))
 
@@ -261,6 +263,7 @@ class TCPClient(object):
     def shake_loop(self):
         # log.info("------'client shake_loop'------") # 7.8
         while True:
+            log.info("####### shake_loop ip:"+self.ip+"\tport:"+str(self.port)+"#######")   # 7.11
             if self.txs:
                 log.info("------client server has txs------")   # 7.10
                 data = [tx.serialize() for tx in self.txs]
