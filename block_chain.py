@@ -108,8 +108,8 @@ class BlockChain(object):
             last_height = last_block.block_header.height
             if block.block_header.height < last_height:
                 raise ValueError('block height is error')
-            if not block.validate(self):
-                raise ValueError('block is not valid')
+            if not block.validate(self):  # 7.11
+                raise ValueError('block is not valid')    # 7.11
             if block.block_header.height == last_height and block != last_block:
                 utxo.roll_back(last_block)
                 self.roll_back()
@@ -194,8 +194,8 @@ class BlockChain(object):
         pub_key = from_wallet.public_key
 
         acc, valid_outpus = self._find_spendable_outputs(from_addr, amount)
-        if acc < amount + fee:  # change
-            raise NotEnoughAmountError(u'not enough coin')
+        # if acc < amount + fee:  # change
+            # raise NotEnoughAmountError(u'not enough coin')
         for fout in valid_outpus:
             index = fout.index
             txid = fout.txid

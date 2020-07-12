@@ -196,12 +196,12 @@ class TCPServer(object):
             log.info("------server handle_transaction: for------") # 7.8
             tx = Transaction.deserialize(tx_data)
             tx_pool.add(tx)
-        # if tx_pool.is_full():   # change
-            # bc = BlockChain()   # change delete
-            # bc.add_block(tx_pool.txs)   # change delete
-            # log.info("add block")   # change leave here
-            # tx_pool.clear() # wait delete
-        # log.info("add block")   # change
+        if tx_pool.is_full():   # 7.12
+            bc = BlockChain()   # 7.12
+            bc.add_block(tx_pool.txs)   # 7.12
+            log.info("add block")   # 7.12
+            tx_pool.clear() # 7.12
+        log.info("add block")   # 7.12
         msg = Msg(Msg.NONE_MSG, "")
         return msg
 
@@ -354,10 +354,10 @@ class TCPClient(object):
         tx_pool = TxPool()
         tx_pool.add(tx)
         log.info("------client handel_transaction txpool added------")  # 7.8
-        # if tx_pool.is_full():   # change
-            # bc.add_block(tx_pool.txs)   # change
-            # log.info("mined a block")   # change
-            # tx_pool.clear() # change
+        if tx_pool.is_full():   # 7.12
+            bc.add_block(tx_pool.txs)   # 7.12
+            log.info("mined a block")   # 7.12
+            tx_pool.clear() # 7.12
     
     def handle_synchronize(self, msg):  # 7.10
         height = msg.get("data", 1)
