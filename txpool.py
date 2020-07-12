@@ -2,7 +2,7 @@
 from utils import Singleton
 
 class TxPool(Singleton):    # only one in whole node
-    SIZE = 0    # change to 0 : will be useless
+    SIZE = 1    # change to 0 : will be useless
     def __init__(self):
         if not hasattr(self, "txs"):
             self.txs = []
