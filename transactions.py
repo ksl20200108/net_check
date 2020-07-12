@@ -181,8 +181,8 @@ class Transaction(object):
             sign = binascii.unhexlify(self.vins[in_id].signature)
             vk = ecdsa.VerifyingKey.from_string(
                 binascii.a2b_hex(vin.pub_key), curve=ecdsa.SECP256k1)
-            if not vk.verify(sign, tx_copy.txid.encode()):
-                return False
+            # if not vk.verify(sign, tx_copy.txid.encode()):
+            #     return False
 
         end_time = time.time()  # change
         if (end_time - self.generation_time) > 1200 : # 1200:    # change
