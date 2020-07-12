@@ -12,6 +12,7 @@ from network import P2p, PeerServer, TCPServer
 from rpcserver import RPCServer
 from packing import *   # change
 from transactions import *
+import pdb  # 7.11
 # import sys # change
 # from sorting import *   # change
 
@@ -104,7 +105,7 @@ class Cli(object):
                 # tx_pool.clear() # change
         except Exception as e:
             pass
-        print('send %d from %s to %s' %(amount, from_addr, to_addr))
+        # print('send %d from %s to %s' %(amount, from_addr, to_addr))  # 7.12
 
     def print_chain(self, height):
         bc = BlockChain()
@@ -192,6 +193,7 @@ def main():
     if hasattr(args, 'start_mining'):    # change
         print("start mining...")    # change
         s.start_find()    # change
+        print("after start_find")   # 7.10
 
     if hasattr(args, 'print_txpool'):   # change
         txs = s.print_txpool()    # change
