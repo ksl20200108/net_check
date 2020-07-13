@@ -108,8 +108,8 @@ class BlockChain(object):
             last_height = last_block.block_header.height
             if block.block_header.height < last_height:
                 raise ValueError('block height is error')
-            if not block.validate(self):  # 7.11
-                raise ValueError('block is not valid')    # 7.11
+            # if not block.validate(self):  # 7.12
+                # raise ValueError('block is not valid')    # 7.12
             if block.block_header.height == last_height and block != last_block:
                 utxo.roll_back(last_block)
                 self.roll_back()
