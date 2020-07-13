@@ -46,7 +46,6 @@ def packing():
     txs = sorting(tx_pool1.txs)    # 2. sort the txpool
     selected_txs = []
     log.info("------first for------")
-    time.sleep(100)
     for tx1 in txs: # 3. start add transactions into the list : until > 1MB or no tx
         selected_txs.append(tx1)
         print(selected_txs[0].txid)
@@ -70,6 +69,7 @@ def finding_new_block():
     while True:
         bc1 = BlockChain()
         tx3, total_fee = packing()
+        log.info("------return these information:" + str(tx3) + str(total_fee) + "------")
         bc1.add_block(tx3, total_fee)    # wait try when there's no transaction
 
 def start_find():
