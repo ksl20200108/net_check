@@ -6,6 +6,7 @@ import asyncio
 import socket
 import json
 import pdb  # 7.11
+import struct,fcntl # 7.13
 
 from kademlia.network import Server
 from block_chain import BlockChain
@@ -377,10 +378,14 @@ class PeerServer(Singleton):
             self.peers = []
         if not hasattr(self, "nodes"):
             self.nodes = []
+    
+    def get_ip(self, ifname='ens33'):   # 7.13
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15],'utf-8')))[20:24])
 
     def nodes_find(self, p2p_server):
         log.info("------------")  # 7.8 find it very important
-        local_ip = "192.168.57.129" # socket.gethostbyname(socket.getfqdn(socket.gethostname()))
+        local_ip = self.get_ip() # socket.gethostbyname(socket.getfqdn(socket.gethostname()))
         while True:
             nodes = p2p_server.get_nodes()
             log.info("-------------")     # 7.8 find it very important
