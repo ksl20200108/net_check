@@ -33,7 +33,6 @@ class NotError(Exception):
 
 def packing():
     log.info("------into packing------")
-    time.sleep(100)
     bc1 = BlockChain()  # used to verify the transactions
     tx_pool1 = TxPool()
     total_fee = 0   # total fee 6.19
