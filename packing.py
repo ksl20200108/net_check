@@ -15,10 +15,16 @@
 
 import sys
 import threading
+import logging
+import time
 from txpool import *
 from block_chain import *
 from sorting import *
 from transactions import *
+
+
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+log = logging.getLogger(__name__)
 
 
 class NotError(Exception):
@@ -26,6 +32,8 @@ class NotError(Exception):
 
 
 def packing():
+    log.info("------into packing------")
+    time.sleep(100)
     bc1 = BlockChain()  # used to verify the transactions
     tx_pool1 = TxPool()
     total_fee = 0   # total fee 6.19
@@ -38,6 +46,8 @@ def packing():
             tx_pool1[tx_pool1.txs.index(tx1)] = Transaction.deserialize(tx1)    # change 6.22
     txs = sorting(tx_pool1.txs)    # 2. sort the txpool
     selected_txs = []
+    log.info("------first for------")
+    time.sleep(100)
     for tx1 in txs: # 3. start add transactions into the list : until > 1MB or no tx
         selected_txs.append(tx1)
         print(selected_txs[0].txid)
@@ -53,6 +63,8 @@ def packing():
             tx_pool1.txs = remain_txs    # 4. delete the packed transactions from the txpool
             # tx_pool1.txs.remove(tx1)   # there are some problems with his remove function --> not use it
             total_fee += tx1.amount    # add the fee
+    log.info("------before return------")
+    time.sleep(100)
     return selected_txs, total_fee  # change 6.20
 
 def finding_new_block():
