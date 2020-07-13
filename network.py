@@ -74,7 +74,7 @@ class TCPServer(object):
     def handle_loop(self, conn, addr):
         # log.info("------'handle_loop' called------")  # 7.8
         while True:
-            log.info("------------")    # 7.11 
+            log.info("------s handle loop------")    # 7.11 
             recv_data = conn.recv(4096)
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
@@ -201,7 +201,6 @@ class TCPServer(object):
             bc = BlockChain()   # 7.12
             bc.add_block(tx_pool.txs)   # 7.12
             log.info("------mine------")   # 7.12
-            time.sleep(1000000000)
             tx_pool.clear() # 7.12
         log.info("------mine------")   # 7.12
         msg = Msg(Msg.NONE_MSG, "")
@@ -359,7 +358,6 @@ class TCPClient(object):
         if tx_pool.is_full():   # 7.12
             bc.add_block(tx_pool.txs)   # 7.12
             log.info("------mined------")   # 7.12
-            time.sleep(1000000)
             tx_pool.clear() # 7.12
     
     def handle_synchronize(self, msg):  # 7.10
