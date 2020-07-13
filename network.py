@@ -197,12 +197,12 @@ class TCPServer(object):
             log.info("------server handle_transaction: for------") # 7.8
             tx = Transaction.deserialize(tx_data)
             tx_pool.add(tx)
-        if tx_pool.is_full():   # 7.12
-            bc = BlockChain()   # 7.12
-            bc.add_block(tx_pool.txs)   # 7.12
-            log.info("------mine------")   # 7.12
-            tx_pool.clear() # 7.12
-        log.info("------mine------")   # 7.12
+        # if tx_pool.is_full():   # 7.12
+        #     bc = BlockChain()   # 7.12
+        #     bc.add_block(tx_pool.txs)   # 7.12
+        #     log.info("------mine------")   # 7.12
+        #     tx_pool.clear() # 7.12
+        # log.info("------mine------")   # 7.12
         msg = Msg(Msg.NONE_MSG, "")
         return msg
 
@@ -314,6 +314,9 @@ class TCPClient(object):
                 log.info("------client handle_shake send block msg------")  # 7.10
                 send_msg = Msg(Msg.GET_BLOCK_MSG, i)
                 self.send(send_msg)
+        else:
+            send_msg = Msg(Msg.NONE_MSG, "")
+            self.send(send_msg)
         # else:   # 7.11
         #     block_chain = BlockChain()
         #     block = block_chain.get_last_block()
@@ -355,10 +358,10 @@ class TCPClient(object):
         tx_pool = TxPool()
         tx_pool.add(tx)
         log.info("------client handel_transaction txpool added------")  # 7.8
-        if tx_pool.is_full():   # 7.12
-            bc.add_block(tx_pool.txs)   # 7.12
-            log.info("------mined------")   # 7.12
-            tx_pool.clear() # 7.12
+        # if tx_pool.is_full():   # 7.12
+            # bc.add_block(tx_pool.txs)   # 7.12
+            # log.info("------mined------")   # 7.12
+            # tx_pool.clear() # 7.12
     
     def handle_synchronize(self, msg):  # 7.10
         height = msg.get("data", 1)
