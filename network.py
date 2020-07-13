@@ -93,11 +93,11 @@ class TCPServer(object):
                 send_data = self.handle(recv_msg, conn, addr)  # 7.10
                 if send_data:
                     log.info("tcpserver_send:"+send_data)   # 7.10
-                    bit.sys.getsizeof(send_data.encode())
-                    time.sleep(10)  # 7.13
+                    # bit = sys.getsizeof(send_data.encode())
+                    time.sleep(5)  # 7.13
                     conn.sendall(send_data.encode())        # 7.10
             except ValueError as e:
-                time.sleep(10)  # 7.13
+                time.sleep(5)  # 7.13
                 conn.sendall('{"code": 0, "data": ""}'.encode())
                 log.info("------receive Unsuccessfully------")
             # send_data = self.handle(str(recv_msg))  # 7.5
@@ -168,7 +168,7 @@ class TCPServer(object):
                 }
             msg = Msg(Msg.HAND_SHAKE_MSG, data)
             send_data = json.dumps(msg.__dict__)
-            time.sleep(10)  # 7.13
+            time.sleep(5)  # 7.13
             conn.sendall(send_data.encode())
             log.info("------server handle_handshake precede send msg------")
 
@@ -179,7 +179,7 @@ class TCPServer(object):
                 log.info("------server handle_handshake synchronize for------")
                 send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
                 send_data = json.dumps(send_msg.__dict__)
-                time.sleep(10)  # 7.13
+                time.sleep(5)  # 7.13
                 conn.sendall(send_data.encode())
                 log.info("------server synchronize already send------")
 
@@ -219,7 +219,7 @@ class TCPServer(object):
             bc.add_block_from_peers(block)
             log.info("------server handle_get_block add_block_from_peers------")
             send_data = '{"code": 0, "data":""}'
-            time.sleep(10)  # 7.13
+            time.sleep(5)  # 7.13
             conn.sendall(send_data.encode())
         except ValueError as e:
             log.info("------server handle_get_block failed to add_block_from_peers------")
@@ -242,7 +242,7 @@ class TCPClient(object):
     def send(self, msg):
         log.info("------client send------") # 7.10
         data = json.dumps(msg.__dict__)
-        time.sleep(10)  # 7.13
+        time.sleep(5)  # 7.13
         self.sock.sendall(data.encode())
         log.info("client send:"+data)
         recv_data = self.sock.recv(4096)
