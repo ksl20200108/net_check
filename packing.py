@@ -62,7 +62,6 @@ def packing():
             # tx_pool1.txs.remove(tx1)   # there are some problems with his remove function --> not use it
             total_fee += tx1.amount    # add the fee
     log.info("------before return------")
-    time.sleep(100)
     return selected_txs, total_fee  # change 6.20
 
 def finding_new_block():
