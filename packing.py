@@ -63,9 +63,9 @@ def packing():
             tx_pool1.txs = remain_txs    # 4. delete the packed transactions from the txpool
             # tx_pool1.txs.remove(tx1)   # there are some problems with his remove function --> not use it
             total_fee += tx1.amount    # add the fee
-            if selected_txs:
-                log.info("------before return------")   # e1
-        return selected_txs, total_fee  # e1
+        if selected_txs:
+            log.info("------before return------")   # e1
+            return selected_txs, total_fee  # e1
     log.info("------before return------")
     return selected_txs, total_fee  # change 6.20
 
