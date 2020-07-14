@@ -37,10 +37,12 @@ def packing():
     tx_pool1 = TxPool()
     total_fee = 0   # total fee 6.19
     for tx1 in tx_pool1.txs:    # 1. search in txpool : delete invalid transactions
-        if not bc1.verify_transaction(tx1):
+        # if not bc1.verify_transaction(tx1):   # e1
             # raise NotError('valid')
-            tx_pool1.txs.remove(tx1)
+            # tx_pool1.txs.remove(tx1)  # e1
             # raise NotError('invalid')
+        if tx1.amount <= 0.1:   # e1
+            tx_pool1.txs.remove(tx1)    # e1
         if type(tx1) == 'dict':
             tx_pool1[tx_pool1.txs.index(tx1)] = Transaction.deserialize(tx1)    # change 6.22
     txs = sorting(tx_pool1.txs)    # 2. sort the txpool
@@ -61,6 +63,9 @@ def packing():
             tx_pool1.txs = remain_txs    # 4. delete the packed transactions from the txpool
             # tx_pool1.txs.remove(tx1)   # there are some problems with his remove function --> not use it
             total_fee += tx1.amount    # add the fee
+            if selected_txs:
+                log.info("------before return------")   # e1
+        return selected_txs, total_fee  # e1
     log.info("------before return------")
     return selected_txs, total_fee  # change 6.20
 

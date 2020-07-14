@@ -1,9 +1,24 @@
-激进策略
+# How to start?
 
-每个节点先要创建自己的钱包才能开始挖矿
+1. Each miner should create their own wallet first, otherwise, they will not receive any reward for mining the block.
 
-此版本解决了区块失联问题
+2. Remember to change conf.py
 
-此版本通过sleep函数解决粘包问题，但不知道多节点会不会再次出现粘包问题，因为不同ip有不同client接收，预计不会
+# Sketches:
 
-交易验证还有问题
+1. Include a transaction in block if its fee is higher than 0.1.
+
+2. 1 tx per block and 1 minute per block
+
+3. No tx time limit:
+
+4. Model ends after 11-th block
+
+5. 10 miners
+11 users
+
+6. Each user generates 1 transaction with transaction fees which follow uniform distribution
+
+# Changes:
+
+experiment1: packing
