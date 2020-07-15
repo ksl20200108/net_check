@@ -419,6 +419,7 @@ class PeerServer(Singleton):
     def broadcast_tx(self, tx):
         log.info("------peerserver broadcast_tx------")  # 7.10
         for peer in self.peers:
+            log.info("for")   # 7.15
             # peer.add_tx(tx)
             log.info("------client broadcast send for------")   # 7.10
             data = [tx.serialize()]   # 7.15
