@@ -21,4 +21,4 @@
 
 # Changes:
 
-experiment1: packing, pow, transactions
+experiment1: packing
