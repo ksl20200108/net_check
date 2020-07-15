@@ -6,7 +6,6 @@ import asyncio
 import socket
 import json
 import pdb  # 7.11
-import struct,fcntl # 7.13
 
 from kademlia.network import Server
 from block_chain import BlockChain
@@ -298,8 +297,7 @@ class TCPClient(object):
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
-                time.sleep(1)   # 7.7 10->1
-
+                time.sleep(0.5)
 
     def handle_shake(self, msg):
         log.info("------client handle_shake------")     # 7.10
