@@ -420,11 +420,12 @@ class PeerServer(Singleton):
         log.info("------peerserver broadcast_tx------")  # 7.10
         for peer in self.peers:
             # peer.add_tx(tx)
-            log.info("------client server broadcast has txs------")   # 7.10
+            log.info("------client broadcast send for------")   # 7.10
             data = tx.serialize()   # 7.15
             msg = Msg(Msg.TRANSACTION_MSG, data)    # 7.15
             peer.send(msg)  # 7.15
             peer.txs.clear()    # 7.15
+            log.info("------client broadcast already send------")
 
     def run(self, p2p_server):
         # log.info("------PeerServer run called------")   # 7.8
