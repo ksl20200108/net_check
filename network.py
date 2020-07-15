@@ -6,6 +6,7 @@ import asyncio
 import socket
 import json
 import pdb  # 7.11
+import socket,struct,fcntl
 
 from kademlia.network import Server
 from block_chain import BlockChain
