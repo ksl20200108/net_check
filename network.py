@@ -6,7 +6,7 @@ import asyncio
 import socket
 import json
 import pdb  # 7.11
-import socket,struct,fcntl
+import socket, struct, fcntl
 
 from kademlia.network import Server
 from block_chain import BlockChain
@@ -419,7 +419,12 @@ class PeerServer(Singleton):
     def broadcast_tx(self, tx):
         log.info("------peerserver broadcast_tx------")  # 7.10
         for peer in self.peers:
-            peer.add_tx(tx)
+            # peer.add_tx(tx)
+            log.info("------client server broadcast has txs------")   # 7.10
+            data = tx.serialize()   # 7.15
+            msg = Msg(Msg.TRANSACTION_MSG, data)    # 7.15
+            peer.send(msg)  # 7.15
+            peer.txs.clear()    # 7.15
 
     def run(self, p2p_server):
         # log.info("------PeerServer run called------")   # 7.8
