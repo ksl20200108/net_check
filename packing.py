@@ -50,7 +50,7 @@ def packing():
     # log.info(txs)
     selected_txs = []
     if not tx_pool1.txs:
-        return 0, 0
+        return [], 0
     selected_tx = tx_pool1.txs[0]
     log.info("------first for------")
     for tx1 in tx_pool1.txs: # 3. start add transactions into the list : until > 1MB or no tx
