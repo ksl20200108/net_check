@@ -184,9 +184,9 @@ class Transaction(object):
             # if not vk.verify(sign, tx_copy.txid.encode()):
             #     return False
 
-        end_time = time.time()  # change
-        if (end_time - self.generation_time) > 1200 : # 1200:    # change
-            return False    # change
+        # end_time = time.time()  # change
+        # if (end_time - self.generation_time) > 1200 : # 1200:    # change
+            # return False    # change
         return True
 
     # def calculate_fee_size_ratio(self, fee): # change
