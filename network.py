@@ -276,6 +276,7 @@ class TCPClient(object):
             if self.txs:
                 log.info("------client server has txs------")   # 7.10
                 data = [tx.serialize() for tx in self.txs]
+                log.info("------client serialize transaction-------")
                 msg = Msg(Msg.TRANSACTION_MSG, data)
                 self.send(msg)
                 self.txs.clear()
@@ -419,15 +420,9 @@ class PeerServer(Singleton):
     def broadcast_tx(self, tx):
         log.info("------peerserver broadcast_tx------")  # 7.10
         for peer in self.peers:
-            log.info("for")   # 7.15
-            # peer.add_tx(tx)
-            log.info("------client broadcast send for------")   # 7.10
-            data = [tx.serialize()]   # 7.15
-            msg = Msg(Msg.TRANSACTION_MSG, data)    # 7.15
-            peer.send(msg)  # 7.15
-            log.info("------******after send******-------") # 7.15
-            peer.txs.clear()    # 7.15
-            log.info("------client broadcast already send------")
+            log.info("------peerserver broadcast for------")    # 7.15
+            peer.add_tx(tx)
+            log.info("------peerserver broadcast add------")    # 7.15
 
     def run(self, p2p_server):
         # log.info("------PeerServer run called------")   # 7.8
