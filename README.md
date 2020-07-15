@@ -22,3 +22,7 @@
 # Changes:
 
 experiment1: packing
+
+# Tips
+
+You should know that there are some differences between machines and computers as well as network environment. I have spent a lot of weeks dealing with the problems caused by these differences. It is really frustrated and I find sometimes a tiny difference may make some part in the code fail. So if the code does not work on your computer, you should try to find the problem yourself. And change the code yourself to make it adapt to your environment.
