@@ -6,7 +6,7 @@ import asyncio
 import socket
 import json
 import pdb  # 7.11
-import struct,fcntl # 7.13
+import socket, struct, fcntl
 
 from kademlia.network import Server
 from block_chain import BlockChain
@@ -38,9 +38,10 @@ class P2p(object):
     def get_nodes(self):
         log.info("------------") # 7.8 find it also important
         nodes = []
-        for bucket in self.server.protocol.router.buckets:
-            # log.info("------int the for------")    # 7.8
-            nodes.extend(bucket.get_nodes())
+        if self.server.protocol:    # 7.18
+            for bucket in self.server.protocol.router.buckets:
+                # log.info("------int the for------")    # 7.8
+                nodes.extend(bucket.get_nodes())
         # log.info("------will return nodes------")   # 7.8
         return nodes
 
@@ -94,10 +95,10 @@ class TCPServer(object):
                 if send_data:
                     log.info("tcpserver_send:"+send_data)   # 7.10
                     # bit = sys.getsizeof(send_data.encode())
-                    time.sleep(3)  # 7.13
+                    time.sleep(1)  # 7.13
                     conn.sendall(send_data.encode())        # 7.10
             except ValueError as e:
-                time.sleep(3)  # 7.13
+                time.sleep(1)  # 7.13
                 conn.sendall('{"code": 0, "data": ""}'.encode())
                 log.info("------receive Unsuccessfully------")
             # send_data = self.handle(str(recv_msg))  # 7.5
@@ -168,7 +169,7 @@ class TCPServer(object):
                 }
             msg = Msg(Msg.HAND_SHAKE_MSG, data)
             send_data = json.dumps(msg.__dict__)
-            time.sleep(3)  # 7.13
+            time.sleep(1)  # 7.13
             conn.sendall(send_data.encode())
             log.info("------server handle_handshake precede send msg------")
 
@@ -179,7 +180,7 @@ class TCPServer(object):
                 log.info("------server handle_handshake synchronize for------")
                 send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
                 send_data = json.dumps(send_msg.__dict__)
-                time.sleep(3)  # 7.13
+                time.sleep(1)  # 7.13
                 conn.sendall(send_data.encode())
                 log.info("------server synchronize already send------")
 
@@ -219,7 +220,7 @@ class TCPServer(object):
             bc.add_block_from_peers(block)
             log.info("------server handle_get_block add_block_from_peers------")
             send_data = '{"code": 0, "data":""}'
-            time.sleep(3)  # 7.13
+            time.sleep(1)  # 7.13
             conn.sendall(send_data.encode())
         except ValueError as e:
             log.info("------server handle_get_block failed to add_block_from_peers------")
@@ -242,7 +243,7 @@ class TCPClient(object):
     def send(self, msg):
         log.info("------client send------") # 7.10
         data = json.dumps(msg.__dict__)
-        time.sleep(3)  # 7.13
+        time.sleep(1)  # 7.13
         self.sock.sendall(data.encode())
         log.info("client send:"+data)
         recv_data = self.sock.recv(4096)
@@ -276,6 +277,7 @@ class TCPClient(object):
             if self.txs:
                 log.info("------client server has txs------")   # 7.10
                 data = [tx.serialize() for tx in self.txs]
+                log.info("------client serialize transaction-------")
                 msg = Msg(Msg.TRANSACTION_MSG, data)
                 self.send(msg)
                 self.txs.clear()
@@ -298,8 +300,7 @@ class TCPClient(object):
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
-                time.sleep(1)   # 7.7 10->1
-
+                time.sleep(0.5)
 
     def handle_shake(self, msg):
         log.info("------client handle_shake------")     # 7.10
@@ -389,7 +390,7 @@ class PeerServer(Singleton):
         if not hasattr(self, "nodes"):
             self.nodes = []
 
-    def get_ip(self, ifname='ens33'):   # 7.13
+    def get_ip(self, ifname='enp2s0'):   # 7.13
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15],'utf-8')))[20:24])
 
@@ -420,7 +421,9 @@ class PeerServer(Singleton):
     def broadcast_tx(self, tx):
         log.info("------peerserver broadcast_tx------")  # 7.10
         for peer in self.peers:
+            log.info("------peerserver broadcast for------")    # 7.15
             peer.add_tx(tx)
+            log.info("------peerserver broadcast add------")    # 7.15
 
     def run(self, p2p_server):
         # log.info("------PeerServer run called------")   # 7.8
