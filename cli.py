@@ -62,6 +62,9 @@ def new_parser():
 
     sort_txpool_parser = sub_parser.add_parser('sort_txpool', help='sort_txpool')  # change
     sort_txpool_parser.add_argument('--sort_txpool', dest='sort_txpool')  # change
+    
+    alive_parser = sub_parser.add_parser('alive', help='alive') # 7.18
+    alive_parser.add_argument('--alive', dest='alive')  # 7.18
 
     return parser
 
@@ -209,6 +212,9 @@ def main():
         utxo_set = UTXOSet()
         txs6 = utxo_set.clear_transactions(txs6)
         print(txs6)
+    
+    if hasattr(args, 'alive'):
+        print("there are alive", threading.active_count())  # 7.18
 
 
 if __name__ == "__main__":
