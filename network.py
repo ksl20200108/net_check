@@ -38,9 +38,10 @@ class P2p(object):
     def get_nodes(self):
         log.info("------------") # 7.8 find it also important
         nodes = []
-        for bucket in self.server.protocol.router.buckets:
-            # log.info("------int the for------")    # 7.8
-            nodes.extend(bucket.get_nodes())
+        if self.server.protocol:    # 7.18
+            for bucket in self.server.protocol.router.buckets:
+                # log.info("------int the for------")    # 7.8
+                nodes.extend(bucket.get_nodes())
         # log.info("------will return nodes------")   # 7.8
         return nodes
 
