@@ -86,7 +86,7 @@ class TCPServer(object):
                 try:
                     recv_msg = eval(recv_data.decode())   # 7.7
                 except:
-                    log.info("------the null data is" + str(recv_data) + "------") # 7.7
+                    log.info("------server the null data is" + str(recv_data) + "------") # 7.7
                 # try:  # 7.7
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
@@ -150,7 +150,7 @@ class TCPServer(object):
             local_last_height = block.block_header.height
         else:
             local_last_height = -1
-        log.info("client local_last_height %d, last_height %d" %(local_last_height, last_height))
+        log.info("server local_last_height %d, last_height %d" %(local_last_height, last_height))
 
         if local_last_height >= last_height:
             log.info("------server handle_handshake precede------")
@@ -402,7 +402,7 @@ class PeerServer(Singleton):
             log.info("-------------")     # 7.8 find it very important
             for node in nodes:
                 if node not in self.nodes:
-                    # log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
+                    log.info("------------nodes_find: nodes ip: " + node.ip + "------------")   # 7.8
                     ip = node.ip
                     port = node.port
                     if local_ip == ip:
@@ -411,9 +411,10 @@ class PeerServer(Singleton):
                     log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
                     # log.info("------will call PeerServer nodes_find------")   # 7.8
                     client = TCPClient(ip, port)
-                    # log.info("------PeerServer nodes_find called------")  # 7.8
+                    log.info("------create TCPClient in nodes_find------")  # 7.8
                     t = threading.Thread(target=client.shake_loop, args=())
                     t.start()
+                    log.info("------peer nodes_find: start the thread shake_loop------")
                     self.peers.append(client)
                     self.nodes.append(node)
             time.sleep(1)
