@@ -406,7 +406,7 @@ class PeerServer(Singleton):
                     ip = node.ip
                     port = node.port
                     if local_ip == ip:
-                        # log.info("------local_ip==ip------")  # 7.8
+                        log.info("------local_ip==ip------")  # 7.8
                         continue
                     log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
                     # log.info("------will call PeerServer nodes_find------")   # 7.8
