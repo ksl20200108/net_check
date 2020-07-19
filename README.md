@@ -31,3 +31,4 @@ Also, it is suggested that you should consider to use a machine with stable perf
 
 # 笔记
 着手解决E1.3 README中提到的问题
+加入多条日志，发现由于广播方式
