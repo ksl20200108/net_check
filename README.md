@@ -31,4 +31,6 @@ Also, it is suggested that you should consider to use a machine with stable perf
 
 # 笔记
 着手解决E1.3 README中提到的问题
-加入多条日志，发现由于广播方式
+加入多条日志，发现由于广播方式有问题（只由产生交易的机子广播一遍，无法通知暂时失联的节点）
+
+改为比特币的广播模式，节点收到交易后再次广播，每个节点收到交易后在handle_transaction中遍历区块交易，判断是否将交易纳入交易池
