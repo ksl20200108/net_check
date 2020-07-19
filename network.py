@@ -402,7 +402,7 @@ class PeerServer(Singleton):
             log.info("-------------")     # 7.8 find it very important
             for node in nodes:
                 if node not in self.nodes:
-                    log.info("------------nodes_find: nodes ip: " + node.ip + "------------")   # 7.8
+                    log.info("------------nodes_find: " + node.ip + "------------")   # 7.8
                     ip = node.ip
                     port = node.port
                     if local_ip == ip:
