@@ -80,6 +80,7 @@ class TCPServer(object):
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
             if not recv_data:   # 7.7
+                log.info("------server handle_loop connection broke------")
                 return  # continue    # 7.19
             try:
                 # log.info("-----in try json loads these data: " + str(recv_data))    # 7.8
