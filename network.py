@@ -245,9 +245,9 @@ class TCPClient(object):
         data = json.dumps(msg.__dict__)
         time.sleep(1)  # 7.13
         self.sock.sendall(data.encode())
-        log.info("client send:"+data)
+        log.info("client send to:" + self.ip + "------with these data" + data)
         recv_data = self.sock.recv(4096)
-        log.info("client_recv_data:"+str(recv_data))
+        log.info("client_recv_data from:" + self.ip + "------with these data" + str(recv_data))
         try:
             log.info("------client try loads and handle data------")
             # recv_msg = json.loads(str(recv_data))
