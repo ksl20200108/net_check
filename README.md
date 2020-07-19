@@ -30,6 +30,6 @@ You should know that there are some differences between machines and computers a
 Also, it is suggested that you should consider to use a machine with stable performence.
 
 # 笔记
-此版本在十八台Linux机器上运行，能够同时调用client和server内的函数，各节点日志刷新正常，解决了突然卡顿的问题（通过在server的handle_loop内判断recv函数值，判断连接是否中断并决定是否结束进程）。但是解决了handle_loop死循环的问题后，失联的节点通常进入peerserver中寻找节点的死循环。
+此版本在十八台Linux机器上运行，能够同时调用client和server内的函数，各节点日志刷新正常，解决了突然卡顿的问题（通过在server的handle_loop内判断recv函数值，判断连接是否中断并决定是否结束进程，暂时认为not recv是连接中断的标志）。但是解决了handle_loop死循环的问题后，失联的节点通常进入peerserver中寻找节点的死循环。
 
 再者交易广播有问题，发现发送交易的机子虽然在十七个peerserver中的client添加交易（add_tx），但是日志显示最终client只发送出了两条交易信息，也就是只向两个节点发送了交易信息。
