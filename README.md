@@ -21,7 +21,7 @@
 
 # Changes:
 
-experiment1: packing
+experiment1: network, txpool
 
 # Tips
 
