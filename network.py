@@ -38,10 +38,9 @@ class P2p(object):
     def get_nodes(self):
         log.info("------------") # 7.8 find it also important
         nodes = []
-        if self.server.protocol:    # 7.18
-            for bucket in self.server.protocol.router.buckets:
-                # log.info("------int the for------")    # 7.8
-                nodes.extend(bucket.get_nodes())
+        for bucket in self.server.protocol.router.buckets:
+            # log.info("------int the for------")    # 7.8
+            nodes.extend(bucket.get_nodes())
         # log.info("------will return nodes------")   # 7.8
         return nodes
 
@@ -80,14 +79,13 @@ class TCPServer(object):
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
             if not recv_data:   # 7.7
-                log.info("------server handle_loop connection broke------")
-                return  # continue    # 7.19
+                continue    # 7.7
             try:
                 # log.info("-----in try json loads these data: " + str(recv_data))    # 7.8
                 try:
                     recv_msg = eval(recv_data.decode())   # 7.7
                 except:
-                    log.info("------server the null data is" + str(recv_data) + "------") # 7.7
+                    log.info("------the null data is" + str(recv_data) + "------") # 7.7
                 # try:  # 7.7
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
@@ -151,7 +149,7 @@ class TCPServer(object):
             local_last_height = block.block_header.height
         else:
             local_last_height = -1
-        log.info("server local_last_height %d, last_height %d" %(local_last_height, last_height))
+        log.info("client local_last_height %d, last_height %d" %(local_last_height, last_height))
 
         if local_last_height >= last_height:
             log.info("------server handle_handshake precede------")
@@ -246,9 +244,9 @@ class TCPClient(object):
         data = json.dumps(msg.__dict__)
         time.sleep(1)  # 7.13
         self.sock.sendall(data.encode())
-        log.info("client send to:" + self.ip + "------with these data" + data)
+        log.info("client send:"+data)
         recv_data = self.sock.recv(4096)
-        log.info("client_recv_data from:" + self.ip + "------with these data" + str(recv_data))
+        log.info("client_recv_data:"+str(recv_data))
         try:
             log.info("------client try loads and handle data------")
             # recv_msg = json.loads(str(recv_data))
@@ -391,7 +389,7 @@ class PeerServer(Singleton):
         if not hasattr(self, "nodes"):
             self.nodes = []
 
-    def get_ip(self, ifname='enp2s0'):   # 7.13
+    def get_ip(self, ifname='ens33'):   # 7.13
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15],'utf-8')))[20:24])
 
@@ -403,19 +401,18 @@ class PeerServer(Singleton):
             log.info("-------------")     # 7.8 find it very important
             for node in nodes:
                 if node not in self.nodes:
-                    log.info("------------nodes_find: " + node.ip + "------------")   # 7.8
+                    # log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
                     ip = node.ip
                     port = node.port
                     if local_ip == ip:
-                        log.info("------local_ip==ip------")  # 7.8
+                        # log.info("------local_ip==ip------")  # 7.8
                         continue
                     log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
                     # log.info("------will call PeerServer nodes_find------")   # 7.8
                     client = TCPClient(ip, port)
-                    log.info("------create TCPClient in nodes_find------")  # 7.8
+                    # log.info("------PeerServer nodes_find called------")  # 7.8
                     t = threading.Thread(target=client.shake_loop, args=())
                     t.start()
-                    log.info("------peer nodes_find: start the thread shake_loop------")
                     self.peers.append(client)
                     self.nodes.append(node)
             time.sleep(1)
