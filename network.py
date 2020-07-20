@@ -218,10 +218,10 @@ class TCPServer(object):
                                 break
                         if not is_new:
                             break
-            if is_new:
-                tx_pool.add(tx)
-                server1 = PeerServer()
-                server1.broadcast_tx(tx)
+                if is_new:
+                    tx_pool.add(tx)
+                    server1 = PeerServer()
+                    server1.broadcast_tx(tx)
         # if tx_pool.is_full():   # 7.12
         #     bc = BlockChain()   # 7.12
         #     bc.add_block(tx_pool.txs)   # 7.12
@@ -398,10 +398,10 @@ class TCPClient(object):
                             break
                     if not is_new:
                         break
-        if is_new:
-            tx_pool.add(tx)
-            server2 = PeerServer()
-            server2.broadcast_tx(tx)
+            if is_new:
+                tx_pool.add(tx)
+                server2 = PeerServer()
+                server2.broadcast_tx(tx)
         log.info("------client handel_transaction txpool added------")  # 7.8
         # if tx_pool.is_full():   # 7.12
             # bc.add_block(tx_pool.txs)   # 7.12
