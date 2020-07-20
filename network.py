@@ -75,7 +75,7 @@ class TCPServer(object):
     def handle_loop(self, conn, addr):
         # log.info("------'handle_loop' called------")  # 7.8
         while True:
-            log.info("------s handle loop------")    # 7.11 
+            log.info("------s handle loop------")    # 7.11
             recv_data = conn.recv(4096)
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
@@ -205,7 +205,7 @@ class TCPServer(object):
             tx = Transaction.deserialize(tx_data)
             is_new = True
             if tx_pool.is_new(tx):  # 7.20
-                log.info("------never get this transaction before------")   # 7.20
+                log.info("------server never get this transaction before------")   # 7.20
                 bc = BlockChain()
                 ls_bl = bc.get_last_block()
                 if ls_bl:
@@ -387,6 +387,7 @@ class TCPClient(object):
         tx_pool = TxPool()
         is_new = True    # 7.20
         if tx_pool.is_new(tx):
+            log.info("------client never get this transaction before------")   # 7.20
             bc = BlockChain()
             ls_bl = bc.get_last_block()
             if ls_bl:
