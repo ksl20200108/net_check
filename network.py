@@ -38,9 +38,10 @@ class P2p(object):
     def get_nodes(self):
         log.info("------------") # 7.8 find it also important
         nodes = []
-        for bucket in self.server.protocol.router.buckets:
-            # log.info("------int the for------")    # 7.8
-            nodes.extend(bucket.get_nodes())
+        if self.server.protocol:    # 7.18
+            for bucket in self.server.protocol.router.buckets:
+                # log.info("------int the for------")    # 7.8
+                nodes.extend(bucket.get_nodes())
         # log.info("------will return nodes------")   # 7.8
         return nodes
 
@@ -79,13 +80,14 @@ class TCPServer(object):
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
             if not recv_data:   # 7.7
-                continue    # 7.7
+                log.info("------server handle_loop connection broke------")
+                return  # continue    # 7.19
             try:
                 # log.info("-----in try json loads these data: " + str(recv_data))    # 7.8
                 try:
                     recv_msg = eval(recv_data.decode())   # 7.7
                 except:
-                    log.info("------the null data is" + str(recv_data) + "------") # 7.7
+                    log.info("------server the null data is" + str(recv_data) + "------") # 7.7
                 # try:  # 7.7
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
@@ -125,7 +127,7 @@ class TCPServer(object):
             res_msg = self.handle_get_block(msg)
         elif code == Msg.TRANSACTION_MSG:
             log.info("------server receive TRANSACTION_MSG------")
-            res_msg = self.handle_transaction(msg)
+            res_msg = self.handle_transaction(msg, conn, addr)  # 7.20
         elif code == Msg.SYNCHRONIZE_MSG:   # 7.10
             log.info("------server receive SYNCHRONIZE_MSG------")
             self.handle_synchronize(msg, conn, addr)
@@ -149,7 +151,7 @@ class TCPServer(object):
             local_last_height = block.block_header.height
         else:
             local_last_height = -1
-        log.info("client local_last_height %d, last_height %d" %(local_last_height, last_height))
+        log.info("server local_last_height %d, last_height %d" %(local_last_height, last_height))
 
         if local_last_height >= last_height:
             log.info("------server handle_handshake precede------")
@@ -194,14 +196,32 @@ class TCPServer(object):
         log.info("------server send get_block msg------")   # 7.10
         return msg
 
-    def handle_transaction(self, msg):
+    def handle_transaction(self, msg, conn, addr):  # 7.20
         log.info("------server handle_transaction------")    # 7.8
         tx_pool = TxPool()
         txs = msg.get("data", {})
         for tx_data in txs:
             log.info("------server handle_transaction: for------") # 7.8
             tx = Transaction.deserialize(tx_data)
-            tx_pool.add(tx)
+            is_new = True
+            if tx_pool.is_new(tx):  # 7.20
+                bc = BlockChain()
+                ls_bl = bc.get_last_block()
+                if ls_bl:
+                    ls_height = ls_bl.block_header.height
+                    for i in range(0, ls_height+1):
+                        block = bc.get_block_by_height(i)
+                        bc_txs = block._transactions
+                        for transaction in bc_txs:
+                            if transaction.txid == tx.txid:
+                                is_new = False
+                                break
+                        if not is_new:
+                            break
+            if is_new:
+                tx_pool.add(tx)
+                server1 = PeerServer()
+                server1.broadcast_tx(tx)
         # if tx_pool.is_full():   # 7.12
         #     bc = BlockChain()   # 7.12
         #     bc.add_block(tx_pool.txs)   # 7.12
@@ -244,9 +264,9 @@ class TCPClient(object):
         data = json.dumps(msg.__dict__)
         time.sleep(1)  # 7.13
         self.sock.sendall(data.encode())
-        log.info("client send:"+data)
+        log.info("client send to:" + self.ip + "------with these data" + data)
         recv_data = self.sock.recv(4096)
-        log.info("client_recv_data:"+str(recv_data))
+        log.info("client_recv_data from:" + self.ip + "------with these data" + str(recv_data))
         try:
             log.info("------client try loads and handle data------")
             # recv_msg = json.loads(str(recv_data))
@@ -363,7 +383,25 @@ class TCPClient(object):
         data = msg.get("data", {})
         tx = Transaction.deserialize(data)
         tx_pool = TxPool()
-        tx_pool.add(tx)
+        is_new = True    # 7.20
+        if tx_pool.is_new(tx):
+            bc = BlockChain()
+            ls_bl = bc.get_last_block()
+            if ls_bl:
+                ls_height = ls_bl.block_header.height
+                for i in range(0, ls_height+1):
+                    block = bc.get_block_by_height(i)
+                    bc_txs = block._transactions
+                    for transaction in bc_txs:
+                        if transaction.txid == tx.txid:
+                            is_new = False
+                            break
+                    if not is_new:
+                        break
+        if is_new:
+            tx_pool.add(tx)
+            server2 = PeerServer()
+            server2.broadcast_tx(tx)
         log.info("------client handel_transaction txpool added------")  # 7.8
         # if tx_pool.is_full():   # 7.12
             # bc.add_block(tx_pool.txs)   # 7.12
@@ -401,18 +439,19 @@ class PeerServer(Singleton):
             log.info("-------------")     # 7.8 find it very important
             for node in nodes:
                 if node not in self.nodes:
-                    # log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
+                    log.info("------------nodes_find: " + node.ip + "------------")   # 7.8
                     ip = node.ip
                     port = node.port
                     if local_ip == ip:
-                        # log.info("------local_ip==ip------")  # 7.8
+                        log.info("------local_ip==ip------")  # 7.8
                         continue
                     log.info("------------nodes ip: " + node.ip + "------------")   # 7.8
                     # log.info("------will call PeerServer nodes_find------")   # 7.8
                     client = TCPClient(ip, port)
-                    # log.info("------PeerServer nodes_find called------")  # 7.8
+                    log.info("------create TCPClient in nodes_find------")  # 7.8
                     t = threading.Thread(target=client.shake_loop, args=())
                     t.start()
+                    log.info("------peer nodes_find: start the thread shake_loop------")
                     self.peers.append(client)
                     self.nodes.append(node)
             time.sleep(1)
