@@ -205,6 +205,7 @@ class TCPServer(object):
             tx = Transaction.deserialize(tx_data)
             is_new = True
             if tx_pool.is_new(tx):  # 7.20
+                log.info("------never get this transaction before------")   # 7.20
                 bc = BlockChain()
                 ls_bl = bc.get_last_block()
                 if ls_bl:
@@ -222,6 +223,7 @@ class TCPServer(object):
                     tx_pool.add(tx)
                     server1 = PeerServer()
                     server1.broadcast_tx(tx)
+                    log.info("------server handle_transaction broadcast------")
         # if tx_pool.is_full():   # 7.12
         #     bc = BlockChain()   # 7.12
         #     bc.add_block(tx_pool.txs)   # 7.12
@@ -400,9 +402,10 @@ class TCPClient(object):
                         break
             if is_new:
                 tx_pool.add(tx)
+                log.info("------client handel_transaction txpool added------")  # 7.8
                 server2 = PeerServer()
                 server2.broadcast_tx(tx)
-        log.info("------client handel_transaction txpool added------")  # 7.8
+                log.info("------client handle_transaction broadcast------")
         # if tx_pool.is_full():   # 7.12
             # bc.add_block(tx_pool.txs)   # 7.12
             # log.info("------mined------")   # 7.12
