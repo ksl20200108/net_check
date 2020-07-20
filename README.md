@@ -4,6 +4,8 @@
 
 2. Remember to change conf.py
 
+3. start the one has bootstrap host first.
+
 # Sketches:
 
 1. Include a transaction in block if its fee is higher than 0.1.
