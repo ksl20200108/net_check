@@ -217,18 +217,18 @@ class TCPServer(object):
                             for transaction in bc_txs:
                                 if transaction.txid == tx.txid:
                                     log.info("------old transaction------")
-                                    log.info("------the id is: " + str(tx.id) + "------")   # 7.20
+                                    log.info("------the id is: " + str(tx.txid) + "------")   # 7.20
                                     is_new = False
                                     # break
                                 else:
                                     log.info("------brand new------")
-                                    log.info("------the id is: " + str(tx.id) + "------")   # 7.20
+                                    log.info("------the id is: " + str(tx.txid) + "------")   # 7.20
                         if not is_new:
                             break
                 if is_new:
                     tx_pool.add(tx)
                     log.info("------server add this transaction------")
-                    log.info("------the id is: " + str(tx.id) + "------")
+                    log.info("------the id is: " + str(tx.txid) + "------")
                     server1 = PeerServer()
                     server1.broadcast_tx(tx)
                     log.info("------server handle_transaction broadcast------")
