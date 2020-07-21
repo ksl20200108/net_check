@@ -34,4 +34,4 @@ Also, it is suggested that you should consider to use a machine with stable perf
 # 笔记
 
 把client除send外不必要的sleep（shake_loop里的）删去
-pass！
+添加了类似区块同步的交易同步机制，把TCP中recv能够接收的最大数据量改成原来的两倍
