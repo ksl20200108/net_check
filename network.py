@@ -90,6 +90,18 @@ class TCPServer(object):
                     recv_msg = eval(recv_data.decode())   # 7.7
                 except:
                     log.info("------server the null data is" + str(recv_data) + "------") # 7.7
+                    try:
+                        log.info("------try eval directly------")
+                        recv_msg = eval(recv_data)
+                        log.info("------succeeded finally------")
+                    except:
+                        log.info("------also failed------")
+                        try:
+                            log.info("------this time we use json loads------")
+                            recv_msg = json.loads(recv_data)
+                            log.info("------succeeded with json loads------")
+                        except:
+                            log.info("------shit it------")
                 # try:  # 7.7
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
