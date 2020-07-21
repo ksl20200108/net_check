@@ -90,6 +90,15 @@ class TCPServer(object):
                     recv_msg = eval(recv_data.decode())   # 7.7
                 except:
                     log.info("------server the null data is" + str(recv_data) + "------") # 7.7
+                    try:
+                        recv_msg = json.loads(recv_data.decode())
+                        log.info("------success with decode------")
+                    except:
+                        try:
+                            recv_msg = json.loads(str(recv_data)
+                            log.info("------success with str")
+                        except:
+                            log.info("------failed------")
                 # try:  # 7.7
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
