@@ -90,18 +90,6 @@ class TCPServer(object):
                     recv_msg = eval(recv_data.decode())   # 7.7
                 except:
                     log.info("------server the null data is" + str(recv_data) + "------") # 7.7
-                    try:
-                        log.info("------try eval directly------")
-                        recv_msg = eval(recv_data)
-                        log.info("------succeeded finally------")
-                    except:
-                        log.info("------also failed------")
-                        try:
-                            log.info("------this time we use json loads------")
-                            recv_msg = json.loads(recv_data)
-                            log.info("------succeeded with json loads------")
-                        except:
-                            log.info("------shit it------")
                 # try:  # 7.7
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
@@ -286,7 +274,10 @@ class TCPServer(object):
             log.info("------longer------")
             data = [tx.serialize() for tx in tx_pool1.txs]
             msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
-            return msg
+            send_data = json.dumps(msg.__dict__)
+            time.sleep(1)
+            conn.sendall(send_data.encode())
+            return Msg(Msg.NONE_MSG, "")
         else:
             log.info("------the same------")
             msg = Msg(Msg.NONE_MSG, "")
@@ -350,7 +341,7 @@ class TCPClient(object):
                 log.info("------client serialize transaction-------")
                 msg = Msg(Msg.TRANSACTION_MSG, data)
                 self.send(msg)
-                self.txs.clear()
+                self.txs = []   # 7.21 'clear' -> '= []'
             else:
                 log.info("shake")
                 block_chain = BlockChain()
