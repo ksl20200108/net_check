@@ -38,4 +38,5 @@ Also, it is suggested that you should consider to use a machine with stable perf
 改为比特币的广播模式，节点收到交易后再次广播，每个节点收到交易后在handle_transaction中遍历区块交易，判断是否将交易纳入交易池
 （之后数据量大的话需要从存储入手，在数据库里存储交易所在区块的信息）
 
-此版本解决了第一条交易的接收问题，多条交易广播还存在问题
+此版本解决了多条交易广播还存在问题
+但由于机房网络太差，准备在下一个版本加入交易同步的算法
