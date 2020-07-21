@@ -24,4 +24,4 @@
 experiment1: packing
 
 
-python3 cli.py send --from 1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W --to 1CjsJ3JguwfGRAW1CKgVYor4UgcSG2XF9n --amount 1 --fee 0.46860337626723036
+python3 cli.py send --from 1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W --to 1CjsJ3JguwfGRAW1CKgVYor4UgcSG2XF9n --amount 1 --fee 
