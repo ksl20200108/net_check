@@ -97,6 +97,7 @@ class TCPServer(object):
                 send_data = self.handle(recv_msg, conn, addr)  # 7.10
                 if send_data:
                     log.info("tcpserver_send:"+send_data)   # 7.10
+                    log.info("------data send to: " + str(addr) + "------") # 7.21
                     # bit = sys.getsizeof(send_data.encode())
                     time.sleep(1)  # 7.13
                     conn.sendall(send_data.encode())        # 7.10
@@ -261,12 +262,21 @@ class TCPServer(object):
             log.info(str(e))
 
     def handle_miss(self, msg, conn, addr):  # 7.21
+        log.info("------server handle miss------")
         data = msg.get("data", "")
         tx_pool1 = TxPool()
+        log.info("------server tx: " + str(len(tx_pool1.pre_txs)) + "client tx: " + str(int(data)) + "------")
         if len(tx_pool1.pre_txs) < int(data):
+            log.info("------shorter------")
             msg = Msg(Msg.GET_TRANSACTION_MSG, "")
             return msg
+        elif len(tx_pool1.pre_txs) > int(data):
+            log.info("------longer------")
+            data = [tx.serialize() for tx in tx_pool1.txs]
+            msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
+            return msg
         else:
+            log.info("------the same------")
             msg = Msg(Msg.NONE_MSG, "")
             return msg
 
@@ -315,6 +325,8 @@ class TCPClient(object):
             self.handle_synchronize(msg)    # 7.10
         elif code == Msg.GET_TRANSACTION_MSG:   # 7.21
             self.handle_get_transaction(msg)
+        elif code == Msg.MISS_TRANSACTION_MSG:  # 7.21
+            self.handle_miss(msg)
 
     def shake_loop(self):
         # log.info("------'client shake_loop'------") # 7.8
@@ -455,6 +467,45 @@ class TCPClient(object):
         tx_pool1 = TxPool()
         data = [tx.serialize() for tx in tx_pool1.txs]
         msg = Msg(Msg.TRANSACTION_MSG, data)
+        self.send(msg)
+
+    def handle_miss(self):  # 7.21
+        log.info("------client handle_miss------")
+        tx_pool = TxPool()
+        txs = msg.get("data", {})
+        for tx_data in txs:
+            log.info("------server handle_miss: for------") # 7.8
+            tx = Transaction.deserialize(tx_data)
+            is_new = True
+            if tx_pool.is_new(tx):  # 7.20
+                log.info("------client miss this transaction before------")   # 7.20
+                bc = BlockChain()
+                ls_bl = bc.get_last_block()
+                if ls_bl:
+                    ls_height = ls_bl.block_header.height
+                    for i in range(0, ls_height+1):
+                        block = bc.get_block_by_height(i)
+                        bc_txs = block._transactions
+                        if bc_txs:
+                            for transaction in bc_txs:
+                                if transaction.txid == tx.txid:
+                                    log.info("------old transaction------")
+                                    log.info("------the id is: " + str(tx.txid) + "------")   # 7.20
+                                    is_new = False
+                                    # break
+                                else:
+                                    log.info("------brand new miss------")
+                                    log.info("------the id is: " + str(tx.txid) + "------")   # 7.20
+                        if not is_new:
+                            break
+                if is_new:
+                    tx_pool.add(tx)
+                    log.info("------client miss add this transaction------")
+                    log.info("------the id is: " + str(tx.txid) + "------")
+                    server1 = PeerServer()
+                    server1.broadcast_tx(tx)
+                    log.info("------client handle_miss broadcast------")
+        msg = Msg(Msg.NONE_MSG, "")
         self.send(msg)
 
     def close(self):
