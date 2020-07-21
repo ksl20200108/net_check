@@ -463,13 +463,14 @@ class TCPClient(object):
         msg = Msg(Msg.SYNCHRONIZE_MSG, data)
         self.send(msg)
 
-    def handle_get_transaction(self):   # 7.21
+    def handle_get_transaction(self, msg):   # 7.21
+        log.info("------client handle_get_transaction------")
         tx_pool1 = TxPool()
         data = [tx.serialize() for tx in tx_pool1.txs]
         msg = Msg(Msg.TRANSACTION_MSG, data)
         self.send(msg)
 
-    def handle_miss(self):  # 7.21
+    def handle_miss(self, msg):  # 7.21
         log.info("------client handle_miss------")
         tx_pool = TxPool()
         txs = msg.get("data", {})
