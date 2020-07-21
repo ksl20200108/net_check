@@ -36,4 +36,6 @@ Also, it is suggested that you should consider to use a machine with stable perf
 把client除send外不必要的sleep（shake_loop里的）删去
 添加了类似区块同步的交易同步机制，把TCP中recv能够接收的最大数据量改成原来的两倍
 
+此版本意在解决不能同时运行两个线程的情况
+
 python3 cli.py send --from 1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W --to 1CjsJ3JguwfGRAW1CKgVYor4UgcSG2XF9n --amount 1 --fee 0.46860337626723036
