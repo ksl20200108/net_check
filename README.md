@@ -32,11 +32,6 @@ You should know that there are some differences between machines and computers a
 Also, it is suggested that you should consider to use a machine with stable performence.
 
 # 笔记
-着手解决E1.3 README中提到的问题
-加入多条日志，发现由于广播方式有问题（只由产生交易的机子广播一遍，无法通知暂时失联的节点）
 
-改为比特币的广播模式，节点收到交易后再次广播，每个节点收到交易后在handle_transaction中遍历区块交易，判断是否将交易纳入交易池
-（之后数据量大的话需要从存储入手，在数据库里存储交易所在区块的信息）
-
-此版本解决了多条交易广播还存在问题
-但由于机房网络太差，准备在下一个版本加入交易同步的算法
+把client除send外不必要的sleep（shake_loop里的）删去
+pass！
