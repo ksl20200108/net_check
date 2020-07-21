@@ -95,8 +95,8 @@ class TCPServer(object):
                         log.info("------success with decode------")
                     except:
                         try:
-                            recv_msg = json.loads(str(recv_data)
-                            log.info("------success with str")
+                            recv_msg = json.loads(str(recv_data))
+                            log.info("------success with str------")
                         except:
                             log.info("------failed------")
                 # try:  # 7.7
