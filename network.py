@@ -93,16 +93,16 @@ class TCPServer(object):
                     recv_msg = eval(recv_data.decode())  # 7.7
                 except:
                     log.info("------server the null data is" + str(recv_data) + "------")  # 7.7
-                    log.info("------the type is : " + str(type(recv_data)) + "------")
-                    try:
-                        recv_msg = json.loads(recv_data.decode())
-                        log.info("------success with decode------")
-                    except:
-                        try:
-                            recv_msg = json.loads(str(recv_data))
-                            log.info("------success with str------")
-                        except:
-                            log.info("------failed------")
+                    # log.info("------the type is : " + str(type(recv_data)) + "------")
+                    # try:
+                    #     recv_msg = json.loads(recv_data.decode())
+                    #     log.info("------success with decode------")
+                    # except:
+                    #     try:
+                    #         recv_msg = json.loads(str(recv_data))
+                    #         log.info("------success with str------")
+                    #     except:
+                    #         log.info("------failed------")
                 # try:  # 7.7
                 #     recv_msg = json.loads(recv_data.decode()) # 7.7
                 # log.info("the type is "+ str(type(recv_msg))) # 7.8
@@ -374,13 +374,14 @@ class TCPClient(object):
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
-                # time.sleep(1) # 7.20
+                time.sleep(1) # 7.20
             tx_pool1 = TxPool()  # 7.20
             if tx_pool1.pre_txs:
                 log.info("------has previous transaction------")
                 data = len(tx_pool1.pre_txs)
                 msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
                 self.send(msg)
+                time.sleep(1)
 
     def handle_shake(self, msg):
         log.info("------client handle_shake------")  # 7.10
