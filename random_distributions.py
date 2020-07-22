@@ -12,5 +12,6 @@ def result1():
 
 for i in range(1, 51):
     print("experiment %d" % i)
+    print("")
     for j in range(1, 11):
         result1()
