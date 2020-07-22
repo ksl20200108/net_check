@@ -6,7 +6,11 @@ def transaction_fee():
 def pdf_distribution():
     pass    # open and store txt
 
-def main():
-    print("the random number is %f" % transaction_fee())
+def result1():
+    print("python3 cli.py send --from 1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W --to 1CjsJ3JguwfGRAW1CKgVYor4UgcSG2XF9n --amount 1 --fee %f" % transaction_fee())
+    print("")
 
-main()
+for i in range(1, 51):
+    print("experiment %d" % i)
+    for j in range(1, 11):
+        result1()
