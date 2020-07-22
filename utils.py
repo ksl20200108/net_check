@@ -36,14 +36,25 @@ def hash_public_key(pubkey):
 def address_to_pubkey_hash(address):
     return base58.b58decode_check(address)[1:]
 
+def synchronized(func):
+    func.__lock__ = threading.Lock()
+
+    def lock_func(*args, **kwargs):
+        with func.__lock__:
+            return func(*args, **kwargs)
+
+    return lock_func
+
+
 class Singleton(object):
     _instance_lock = threading.Lock()
     __instance = None
 
+    @synchronized
     def __new__(cls, *args, **kwargs):
 
         if cls.__instance is None:
             with Singleton._instance_lock:
-                cls.__instance = super(
-                    Singleton, cls).__new__(cls)
+                cls.__instance = super(Singleton, cls).__new__(cls)
         return cls.__instance
+
