@@ -81,7 +81,7 @@ class TCPServer(object):
         # log.info("------'handle_loop' called------")  # 7.8
         while True:
             log.info("------s handle loop------")  # 7.11
-            recv_data = conn.recv(8192) # 7.21
+            recv_data = conn.recv(16384) # 7.21
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
             if not recv_data:  # 7.7
@@ -267,7 +267,7 @@ class TCPServer(object):
         try:
             bc.add_block_from_peers(block)
             log.info("------server handle_get_block add_block_from_peers------")
-            send_data = '{"code": 0, "data":""}'
+            send_data = Msg(Msg.NONE_MSG, "") # '{"code": 0, "data":""}'    # pass
             time.sleep(1)  # 7.13
             conn.sendall(send_data.encode())
         except ValueError as e:
@@ -316,7 +316,7 @@ class TCPClient(object):
         time.sleep(1)  # 7.13
         self.sock.sendall(data.encode())
         log.info("client send to:" + self.ip + "------with these data" + data)
-        recv_data = self.sock.recv(8192)    # 7.21
+        recv_data = self.sock.recv(16384)    # 7.21
         log.info("client_recv_data from:" + self.ip + "------with these data" + str(recv_data))
         try:
             log.info("------client try loads and handle data------")
@@ -324,7 +324,7 @@ class TCPClient(object):
             recv_msg = eval(recv_data.decode())  # 7.10
             self.handle(recv_msg)  # 7.7 delete str
             log.info("------client had loads and handle data------")  # 7.10
-        except json.decoder.JSONDecodeError as e:
+        except:
             return
         # self.handle(str(recv_msg))  # 7.5
 
