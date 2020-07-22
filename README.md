@@ -44,4 +44,6 @@ recv函数通信接收的数据大小还是不够，还是出现"SyntaxError: un
 
 命令行会有重复输出一次的情况，尚不清楚原因。
 
+解决了EOF的问题，就是接收到空数据b''.原因是server发送的信息直接等于"{"code": "0", "data": ""}"，要发送空信息应该用Msg的NONE_MSG才对。
+
 python3 cli.py send --from 1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W --to 1CjsJ3JguwfGRAW1CKgVYor4UgcSG2XF9n --amount 1 --fee 
