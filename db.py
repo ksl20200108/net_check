@@ -1,8 +1,9 @@
 # coding:utf-8
 import couchdb
 from utils import Singleton
+from singleton1 import *
 
-class DB(Singleton):
+class DB(Singleton1):
     def __init__(self, db_server_url, db_name='block_chain'):
         self._db_server_url = db_server_url
         self._server = couchdb.Server(self._db_server_url)
