@@ -1,45 +1,36 @@
 import threading
 
-
 def synchronized(func):
     func.__lock__ = threading.Lock()
 
-    def synced_func(*args, **kws):
+    def lock_func(*args, **kwargs):
         with func.__lock__:
-            return func(*args, **kws)
+            return func(*args, **kwargs)
 
-    return synced_func
+    return lock_func
 
-
-def Singleton1(cls):
-    instances = {}
+class Singleton1(object):
+    instance = None
 
     @synchronized
-    def get_instance(*args, **kw):
-        if cls not in instances:
-            instances[cls] = cls(*args, **kw)
-        return instances[cls]
+    def __new__(cls, *args, **kwargs):
+        """
 
-    return get_instance
+        :type kwargs: object
+        """
+        if cls.instance is None:
+            cls.instance = super().__new__(cls)
+        return cls.instance
+
+    def __init__(self, num):
+        self.a = num + 5
+
+    def printf(self):
+        print(self.a)
 
 
-def worker():
-    single_test = test()
-    print "id----> %s" % id(single_test)
+a = Singleton1(3)
+print(id(a))
+b = Singleton1(4)
+print(id(b))
 
-
-@Singleton1
-class test():
-    a = 1
-
-if __name__ == "__main__":
-    task_list = []
-    for one in range(30):
-        t = threading.Thread(target=worker)
-        task_list.append(t)
-
-    for one in task_list:
-        one.start()
-
-    for one in task_list:
-        one.join()
