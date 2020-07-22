@@ -42,4 +42,6 @@ recv函数通信接收的数据大小还是不够，还是出现"SyntaxError: un
 
 数据库的线程安全又问题，尝试解决。
 
+命令行会有重复输出一次的情况，尚不清楚原因。
+
 python3 cli.py send --from 1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W --to 1CjsJ3JguwfGRAW1CKgVYor4UgcSG2XF9n --amount 1 --fee 
