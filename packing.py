@@ -84,7 +84,7 @@ def packing():
     return selected_txs, total_fee  # change 6.20
 
 def finding_new_block():
-    while True:
+    for i in range(0, 12):
         bc1 = BlockChain()
         tx3, total_fee = packing()
         log.info("------return these information:" + str(tx3) + str(total_fee) + "------")
