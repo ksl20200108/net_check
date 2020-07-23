@@ -50,7 +50,6 @@ class Singleton(object):
     _instance_lock = threading.Lock()
     __instance = None
 
-    @synchronized
     def __new__(cls, *args, **kwargs):
 
         if cls.__instance is None:
@@ -58,3 +57,19 @@ class Singleton(object):
                 cls.__instance = super(Singleton, cls).__new__(cls)
         return cls.__instance
 
+class Singleton1(object):
+    instance = None
+
+    @synchronized
+    def __new__(cls, *args, **kwargs):
+        if cls.instance is None:
+            cls.instance = super().__new__(cls)
+        return cls.instance
+
+# def task():
+#     a = Singleton1()
+#     print(id(a))
+
+# for i in range(5):
+#     t = threading.Thread(target=task, args=())
+#     t.start()

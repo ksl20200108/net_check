@@ -15,6 +15,7 @@ from txpool import TxPool
 from transactions import Transaction
 from utils import Singleton
 from conf import bootstrap_host, bootstrap_port, listen_port
+from signal import signal, SIGPIPE, SIG_DFL  # 7.23
 
 handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -23,6 +24,7 @@ log = logging.getLogger('kademlia')
 log.addHandler(handler)
 log.setLevel(logging.DEBUG)
 
+# signal(SIGPIPE,SIG_DFL) # 7.23
 
 class P2p(object):
     def __init__(self):
@@ -116,7 +118,8 @@ class TCPServer(object):
                     conn.sendall(send_data.encode())  # 7.10
             except ValueError as e:
                 time.sleep(1)  # 7.13
-                conn.sendall('{"code": 0, "data": ""}'.encode())
+                send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__)  # 7.23
+                conn.sendall(send_data.encode())    # '{"code": 0, "data": ""}' # 7.23
                 log.info("------receive Unsuccessfully------")
             # send_data = self.handle(str(recv_msg))  # 7.5
             # log.info("tcpserver_send:"+send_data)   # 7.5
@@ -152,12 +155,12 @@ class TCPServer(object):
             log.info("------server receive MISS_TRANSACTION_MSG------")
             res_msg = self.handle_miss(msg, conn, addr)
         else:
-            return '{"code": 0, "data":""}'
+            return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)    # '{"code": 0, "data":""}'    # 7.23
 
         if res_msg:
             return json.dumps(res_msg.__dict__)
         else:
-            return None
+            return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
 
     def handle_handshake(self, msg, conn, addr):
         log.info("------server handle_handshake------")  # 7.10
@@ -267,7 +270,7 @@ class TCPServer(object):
         try:
             bc.add_block_from_peers(block)
             log.info("------server handle_get_block add_block_from_peers------")
-            send_data = Msg(Msg.NONE_MSG, "") # '{"code": 0, "data":""}'    # pass
+            send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
             time.sleep(1)  # 7.13
             conn.sendall(send_data.encode())
         except ValueError as e:
@@ -287,10 +290,10 @@ class TCPServer(object):
             log.info("------longer------")
             data = [tx.serialize() for tx in tx_pool1.txs]
             msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
-            send_data = json.dumps(msg.__dict__)
-            time.sleep(1)
-            conn.sendall(send_data.encode())
-            return Msg(Msg.NONE_MSG, "")
+            # send_data = json.dumps(msg.__dict__)
+            # time.sleep(1)
+            # conn.sendall(send_data.encode())
+            return msg
         else:
             log.info("------the same------")
             msg = Msg(Msg.NONE_MSG, "")
@@ -471,6 +474,8 @@ class TCPClient(object):
         # bc.add_block(tx_pool.txs)   # 7.12
         # log.info("------mined------")   # 7.12
         # tx_pool.clear() # 7.12
+        msg = Msg(Msg.NONE_MSG, "") # 7.23
+        self.send(msg)  # 7.23
 
     def handle_synchronize(self, msg):  # 7.10
         height = msg.get("data", 1)
