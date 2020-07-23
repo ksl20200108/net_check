@@ -1,7 +1,7 @@
 # coding:utf-8
 import argparse
 import threading
-from block_chain import BlockChain
+from block_chain import *
 from wallet import Wallet
 from wallets import Wallets
 from utxo import UTXOSet
@@ -62,7 +62,7 @@ def new_parser():
 
     sort_txpool_parser = sub_parser.add_parser('sort_txpool', help='sort_txpool')  # change
     sort_txpool_parser.add_argument('--sort_txpool', dest='sort_txpool')  # change
-    
+
     alive_parser = sub_parser.add_parser('alive', help='alive') # 7.18
     alive_parser.add_argument('--alive', dest='alive')  # 7.18
 
@@ -212,9 +212,16 @@ def main():
         utxo_set = UTXOSet()
         txs6 = utxo_set.clear_transactions(txs6)
         print(txs6)
-    
+
     if hasattr(args, 'alive'):
-        print("there are alive", threading.active_count())  # 7.18
+        chain_doc = []
+        bc1 = BlockChain()
+        last_blo = bc1.get_last_block()
+        last_height = last_blo.block_header.height
+        for i in range(0, last_height+1):
+            blo = bc1.get_block_by_height(i)
+            print(blo.serialize())
+            print("")
 
 
 if __name__ == "__main__":
