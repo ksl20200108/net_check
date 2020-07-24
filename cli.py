@@ -146,18 +146,20 @@ def start():    # wait : thread add_block(txs)   txs = []   packing function >1M
     couch = couchdb.Server("http://127.0.0.1:5984")
     try:
         couch.delete('block_chain')
-    db1 = couch.create('block_chain')
+    except:
+        pass
+    db = couch.create('block_chain')
     doc1 = {
         "index": 0,
         "value": 50,
         "pub_key_hash": "1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W"
     }
-    db1.create(doc1)
+    db.create(doc1)
     doc2 = {
         "_id": "UTXOl",
         "height": 0
     }
-    db1.create(doc2)
+    db.create(doc2)
     doc3 = {
         "_id": "fa2db3113d4598834fcc43719ce613862606588f08ab2d62528ad1204f65a693",
         "block_header": {
@@ -192,12 +194,12 @@ def start():    # wait : thread add_block(txs)   txs = []   packing function >1M
             }
         ]
     }
-    db1.create(doc3)
+    db.create(doc3)
     doc4 = {
         "_id": "l",
         "hash": "fa2db3113d4598834fcc43719ce613862606588f08ab2d62528ad1204f65a693"
     }
-    db1.create(doc4)
+    db.create(doc4)
 
     tcpserver = TCPServer()
     tcpserver.listen()
