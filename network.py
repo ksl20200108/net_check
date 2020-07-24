@@ -436,6 +436,7 @@ class TCPClient(object):
         # log.info("------data type" + type(msg) + "------")  # 7.10
         block = Block.deserialize(data)
         bc = BlockChain()
+        log.info("------client deserialize block from peer------")
         try:
             bc.add_block_from_peers(block)
             log.info("------client handle_get_block add_block_from_peers------")  # 7.8
