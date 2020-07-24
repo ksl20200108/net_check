@@ -114,10 +114,10 @@ class TCPServer(object):
                     log.info("tcpserver_send:" + send_data)  # 7.10
                     log.info("------data send to: " + str(addr) + "------")  # 7.21
                     # bit = sys.getsizeof(send_data.encode())
-                    time.sleep(1.01)  # 7.13
+                    time.sleep(0.1)  # 7.13
                     conn.sendall(send_data.encode())  # 7.10
             except ValueError as e:
-                time.sleep(1.02)  # 7.13
+                time.sleep(0.2)  # 7.13
                 send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__)  # 7.23
                 conn.sendall(send_data.encode())    # '{"code": 0, "data": ""}' # 7.23
                 log.info("------receive Unsuccessfully------")
@@ -192,9 +192,9 @@ class TCPServer(object):
                 }
             msg = Msg(Msg.HAND_SHAKE_MSG, data)
             send_data = json.dumps(msg.__dict__)
-            time.sleep(1.03)  # 7.13
+            time.sleep(0.3)  # 7.13
             conn.sendall(send_data.encode())
-            log.info("------server handle_handshake precede send msg------")
+            log.info("------server handle_handshake precede send msg: " + str(data) + "------")
 
         elif local_last_height < last_height:
             log.info("------server handle_handshake fall behind------")
@@ -203,7 +203,7 @@ class TCPServer(object):
                 log.info("------server handle_handshake synchronize for------")
                 send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
                 send_data = json.dumps(send_msg.__dict__)
-                time.sleep(1.04)  # 7.13
+                time.sleep(0.4)  # 7.13
                 conn.sendall(send_data.encode())
                 log.info("------server synchronize already send------")
 
@@ -271,7 +271,7 @@ class TCPServer(object):
             bc.add_block_from_peers(block)
             log.info("------server handle_get_block add_block_from_peers------")
             send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
-            time.sleep(1.05)  # 7.13
+            time.sleep(0.5)  # 7.13
             conn.sendall(send_data.encode())
         except ValueError as e:
             log.info("------server handle_get_block failed to add_block_from_peers------")
@@ -316,7 +316,7 @@ class TCPClient(object):
     def send(self, msg):
         log.info("------client send------")  # 7.10
         data = json.dumps(msg.__dict__)
-        time.sleep(1.05)  # 7.13
+        time.sleep(0.5)  # 7.13
         self.sock.sendall(data.encode())
         log.info("client send to:" + self.ip + "------with these data" + data)
         recv_data = self.sock.recv(16384)    # 7.21
@@ -377,14 +377,14 @@ class TCPClient(object):
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
-                time.sleep(1.04) # 7.20
+                time.sleep(0.4) # 7.20
             tx_pool1 = TxPool()  # 7.20
             if tx_pool1.pre_txs:
                 log.info("------has previous transaction------")
                 data = len(tx_pool1.pre_txs)
                 msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
                 self.send(msg)
-                time.sleep(1.03)
+                time.sleep(0.3)
 
     def handle_shake(self, msg):
         log.info("------client handle_shake------")  # 7.10
@@ -576,7 +576,7 @@ class PeerServer(Singleton):
                     log.info("------peer nodes_find: start the thread shake_loop------")
                     self.peers.append(client)
                     self.nodes.append(node)
-            time.sleep(1.02)
+            time.sleep(0.2)
 
     def broadcast_tx(self, tx):
         log.info("------peerserver broadcast_tx------")  # 7.10
