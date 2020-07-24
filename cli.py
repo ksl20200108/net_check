@@ -12,6 +12,7 @@ from network import P2p, PeerServer, TCPServer
 from rpcserver import RPCServer
 from packing import *   # change
 from transactions import *
+import couchdb
 import pdb  # 7.11
 # import sys # change
 # from sorting import *   # change
@@ -197,6 +198,7 @@ def start():    # wait : thread add_block(txs)   txs = []   packing function >1M
         "hash": "fa2db3113d4598834fcc43719ce613862606588f08ab2d62528ad1204f65a693"
     }
     db.create(doc4)
+    print("initialize database successfully")
 
     bc = BlockChain()   # only one blockchain called bc
     utxo_set = UTXOSet()
