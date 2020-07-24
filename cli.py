@@ -169,7 +169,7 @@ def start():    # wait : thread add_block(txs)   txs = []   packing function >1M
             "hash": "fa2db3113d4598834fcc43719ce613862606588f08ab2d62528ad1204f65a693",
             "prev_block_hash": "",
             "hash_merkle_root": "0b3b993e4e22ffe31624c73c009797f0e7fde2b136d0f4c621bf04382d9e08b2"
-        }
+        },
         "magic_no": 3166485692,
         "transactions": [
             {
