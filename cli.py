@@ -140,9 +140,6 @@ class Cli(object):
 
 
 def start():    # wait : thread add_block(txs)   txs = []   packing function >1MB or no tx verify if tx are valid
-    bc = BlockChain()   # only one blockchain called bc
-    utxo_set = UTXOSet()
-    utxo_set.reindex(bc)
     couch = couchdb.Server("http://127.0.0.1:5984")
     try:
         couch.delete('block_chain')
@@ -200,6 +197,10 @@ def start():    # wait : thread add_block(txs)   txs = []   packing function >1M
         "hash": "fa2db3113d4598834fcc43719ce613862606588f08ab2d62528ad1204f65a693"
     }
     db.create(doc4)
+
+    bc = BlockChain()   # only one blockchain called bc
+    utxo_set = UTXOSet()
+    utxo_set.reindex(bc)
 
     tcpserver = TCPServer()
     tcpserver.listen()
