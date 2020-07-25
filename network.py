@@ -352,7 +352,7 @@ class TCPClient(object):
         log.info("------client send------")  # 7.10
         time.sleep(1)  # 7.13
         data = json.dumps(msg.__dict__)
-        send_bytes = send_data.encode()
+        send_bytes = data.encode()
         header_json = json.dumps({"send_size": len(send_bytes)})
         header_bytes = header_json.encode()
         header_size = len(header_bytes)
