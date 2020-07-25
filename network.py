@@ -119,7 +119,6 @@ class TCPServer(object):
                     log.info("tcpserver_send:" + send_data)  # 7.10
                     log.info("------data send to: " + str(addr) + "------")  # 7.21
                     # bit = sys.getsizeof(send_data.encode())
-                    time.sleep(1)  # 7.13
                     send_bytes = send_data.encode()
                     header_json = json.dumps({"send_size": len(send_bytes)})
                     header_bytes = header_json.encode()
@@ -128,7 +127,6 @@ class TCPServer(object):
                     conn.sendall(header_bytes)
                     conn.sendall(send_bytes)  # 7.10
             except ValueError as e:
-                time.sleep(1)  # 7.13
                 send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__)  # 7.23
                 send_bytes = send_data.encode()
                 header_json = json.dumps({"send_size": len(send_bytes)})
@@ -226,7 +224,6 @@ class TCPServer(object):
                 log.info("------server handle_handshake synchronize for------")
                 send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
                 send_data = json.dumps(send_msg.__dict__)
-                time.sleep(1)  # 7.13
                 send_bytes = send_data.encode()
                 header_json = json.dumps({"send_size": len(send_bytes)})
                 header_bytes = header_json.encode()
@@ -300,7 +297,6 @@ class TCPServer(object):
             bc.add_block_from_peers(block)
             log.info("------server handle_get_block add_block_from_peers------")
             send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
-            time.sleep(1)  # 7.13
             send_bytes = send_data.encode()
             header_json = json.dumps({"send_size": len(send_bytes)})
             header_bytes = header_json.encode()
@@ -326,7 +322,6 @@ class TCPServer(object):
             data = [tx.serialize() for tx in tx_pool1.txs]
             msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
             # send_data = json.dumps(msg.__dict__)
-            # time.sleep(1)
             # conn.sendall(send_data.encode())
             return msg
         else:
@@ -350,7 +345,6 @@ class TCPClient(object):
 
     def send(self, msg):
         log.info("------client send------")  # 7.10
-        time.sleep(1)  # 7.13
         data = json.dumps(msg.__dict__)
         send_bytes = data.encode()
         header_json = json.dumps({"send_size": len(send_bytes)})
@@ -422,14 +416,12 @@ class TCPClient(object):
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
-                time.sleep(1) # 7.20
             tx_pool1 = TxPool()  # 7.20
             if tx_pool1.pre_txs:
                 log.info("------has previous transaction------")
                 data = len(tx_pool1.pre_txs)
                 msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
                 self.send(msg)
-                time.sleep(1)
 
     def handle_shake(self, msg):
         log.info("------client handle_shake------")  # 7.10
@@ -606,7 +598,7 @@ class PeerServer(Singleton):
         while True:
             nodes = p2p_server.get_nodes()
             log.info("-------------")
-            print(node.ip for node in self.nodes)
+            # print(node.ip for node in self.nodes)
             for node in nodes:
                 if node.ip not in self.ips:
                     log.info("------------nodes_find: " + node.ip + "------------")  # 7.8
