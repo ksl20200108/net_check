@@ -548,6 +548,8 @@ class PeerServer(Singleton):
             self.peers = []
         if not hasattr(self, "nodes"):
             self.nodes = []
+        if not hasattr(self, "ips"):
+            self.ips = []
 
     def get_ip(self, ifname='enp2s0'):  # 7.13
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -555,13 +557,13 @@ class PeerServer(Singleton):
             fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
 
     def nodes_find(self, p2p_server):
-        log.info("------------")  # 7.8 find it very important
+        log.info("------------")
         local_ip = self.get_ip()  # socket.gethostbyname(socket.getfqdn(socket.gethostname()))
         while True:
             nodes = p2p_server.get_nodes()
-            log.info("-------------")  # 7.8 find it very important
+            log.info("-------------")
             for node in nodes:
-                if node not in self.nodes:
+                if node.ip not in self.ips:
                     log.info("------------nodes_find: " + node.ip + "------------")  # 7.8
                     ip = node.ip
                     port = node.port
@@ -577,6 +579,7 @@ class PeerServer(Singleton):
                     log.info("------peer nodes_find: start the thread shake_loop------")
                     self.peers.append(client)
                     self.nodes.append(node)
+                    self.ips.append(ip)
             time.sleep(random.uniform(1, 2))
 
     def broadcast_tx(self, tx):
