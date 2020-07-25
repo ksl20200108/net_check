@@ -84,11 +84,11 @@ class TCPServer(object):
         # log.info("------'handle_loop' called------")  # 7.8
         while True:
             log.info("------s handle loop------")  # 7.11
-            header_size = struct.unpack('i', self.sock.recv(4))[0]
-            header_bytes = self.sock.recv(header_size)
+            header_size = struct.unpack('i', conn.recv(4))[0]
+            header_bytes = conn.recv(header_size)
             header = eval(header_bytes.decode())
             send_size = header["send_size"]
-            recv_data = self.sock.recv(send_size)    # 7.21
+            recv_data = conn.recv(send_size)    # 7.21
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
             if not recv_data:  # 7.7
