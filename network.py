@@ -84,7 +84,11 @@ class TCPServer(object):
         # log.info("------'handle_loop' called------")  # 7.8
         while True:
             log.info("------s handle loop------")  # 7.11
-            recv_data = conn.recv(16384) # 7.21
+            header_size = struct.unpack('i', self.sock.recv(4))[0]
+            header_bytes = self.sock.recv(header_size)
+            header = eval(header_bytes.decode())
+            send_size = header["send_size"]
+            recv_data = self.sock.recv(send_size)    # 7.21
             # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
             if not recv_data:  # 7.7
@@ -346,9 +350,15 @@ class TCPClient(object):
 
     def send(self, msg):
         log.info("------client send------")  # 7.10
-        data = json.dumps(msg.__dict__)
         time.sleep(1)  # 7.13
-        self.sock.sendall(data.encode())
+        data = json.dumps(msg.__dict__)
+        send_bytes = send_data.encode()
+        header_json = json.dumps({"send_size": len(send_bytes)})
+        header_bytes = header_json.encode()
+        header_size = len(header_bytes)
+        self.conn.sendall(struct.pack('i', header_size))
+        self.conn.sendall(header_bytes)
+        self.conn.sendall(send_bytes)
         log.info("client send to:" + self.ip + "------with these data" + data)
         header_size = struct.unpack('i', self.sock.recv(4))[0]
         header_bytes = self.sock.recv(header_size)
