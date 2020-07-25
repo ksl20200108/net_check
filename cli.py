@@ -251,9 +251,8 @@ def main():
 
     if hasattr(args, 'send_from') \
         and hasattr(args, 'send_to') \
-        and hasattr(args, 'send_amount')\
-        and hasattr(args, 'send_fee'):  # change
-        s.send(args.send_from, args.send_to, args.send_amount, args.send_fee)   # change
+        and hasattr(args, 'send_amount'):
+        s.send(args.send_from, args.send_to, args.send_amount)   # change
 
     if hasattr(args, 'start_mining'):    # change
         print("start mining...")    # change
