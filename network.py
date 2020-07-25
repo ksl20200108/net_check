@@ -356,9 +356,9 @@ class TCPClient(object):
         header_json = json.dumps({"send_size": len(send_bytes)})
         header_bytes = header_json.encode()
         header_size = len(header_bytes)
-        self.conn.sendall(struct.pack('i', header_size))
-        self.conn.sendall(header_bytes)
-        self.conn.sendall(send_bytes)
+        self.sock.sendall(struct.pack('i', header_size))
+        self.sock.sendall(header_bytes)
+        self.sock.sendall(send_bytes)
         log.info("client send to:" + self.ip + "------with these data" + data)
         header_size = struct.unpack('i', self.sock.recv(4))[0]
         header_bytes = self.sock.recv(header_size)
