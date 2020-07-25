@@ -562,6 +562,7 @@ class PeerServer(Singleton):
         while True:
             nodes = p2p_server.get_nodes()
             log.info("-------------")
+            print(node.ip for node in self.nodes)
             for node in nodes:
                 if node.ip not in self.ips:
                     log.info("------------nodes_find: " + node.ip + "------------")  # 7.8
