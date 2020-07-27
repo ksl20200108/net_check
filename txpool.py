@@ -13,8 +13,14 @@ class TxPool(Singleton):    # only one in whole node
         return len(self.txs) >= self.SIZE   # change : will be useless
 
     def add(self, tx):
-        self.txs.append(tx)
-        self.pre_txs.append(tx.txid)    # 7.20
+        is_new = True
+        for id in self.pre_txs:
+            if id == tx.txid:
+                is_new = False
+                break
+        if is_new:
+            self.txs.append(tx)
+            self.pre_txs.append(tx.txid)    # 7.20
 
     def clear(self):
         self.txs.clear()
