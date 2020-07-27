@@ -390,7 +390,7 @@ class TCPClient(object):
         # log.info("------'client shake_loop'------") # 7.8
         while True:
             log.info("------client shake_loop ip:" + self.ip + "\tport:" + str(self.port) + "------")  # 7.11
-            tx_pool1 = TxPool()  # 7.20
+            tx_pool1 = TxPool()  # 7.2
             if self.txs:
                 log.info("------client server has txs------")  # 7.10
                 data = [tx.serialize() for tx in self.txs]
@@ -399,10 +399,34 @@ class TCPClient(object):
                 self.send(msg)
                 self.txs = []  # 7.21 'clear' -> '= []'
             elif tx_pool1.pre_txs:
-                log.info("------has previous transaction------")
-                data = len(tx_pool1.pre_txs)
-                msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
-                self.send(msg)
+                a = random.uniform(0, 1)
+                if a < 0.5:
+                    log.info("------has previous transaction------")
+                    data = len(tx_pool1.pre_txs)
+                    msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
+                    self.send(msg)
+                else:
+                    log.info("shake")
+                    block_chain = BlockChain()
+                    block = block_chain.get_last_block()
+                    try:
+                        genesis_block = block_chain[0]
+                    except IndexError as e:
+                        genesis_block = None
+                    if block:
+                        last_height = block.block_header.height
+                    else:
+                        last_height = -1
+                    data = {
+                        "last_height": -1,
+                        "genesis_block": ""
+                    }
+                    if genesis_block:
+                        data = {
+                            "last_height": last_height,
+                            "genesis_block": genesis_block.serialize()
+                        }
+                    msg = Msg(Msg.HAND_
             else:
                 log.info("shake")
                 block_chain = BlockChain()
