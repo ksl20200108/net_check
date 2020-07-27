@@ -202,7 +202,7 @@ class TCPServer(object):
             }
             if genesis_block:
                 data = {
-                    "last_height": block.block_header.height,
+                    "last_height": local_last_height,
                     "genesis_block": genesis_block.serialize()
                 }
             msg = Msg(Msg.HAND_SHAKE_MSG, data)
