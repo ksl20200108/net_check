@@ -132,8 +132,10 @@ class BlockChain(object):
         height = -1
         if last_block:
             height = last_block.block_header.height
-        if index <= height:
+        if index < height:
             return self.get_block_by_height(index)
+        elif index == height:
+            return last_block
         else:
             raise IndexError('Index is out of range')
 
