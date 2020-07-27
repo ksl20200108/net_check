@@ -211,8 +211,12 @@ def main():
     if hasattr(args, 'print_txpool'):   # change
         txs = s.print_txpool()    # change
         print(type(txs[0])) # dict
+        i = 0
         for tx in txs:  # change
+            i += 1
             print("transaction: ", tx)  # change
+        print("")
+        print(i)
 
     if hasattr(args, 'sort_txpool'):
         txs6, no = s.sort_txpool()
