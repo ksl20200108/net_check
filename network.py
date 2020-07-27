@@ -397,6 +397,11 @@ class TCPClient(object):
                 msg = Msg(Msg.TRANSACTION_MSG, data)
                 self.send(msg)
                 self.txs = []  # 7.21 'clear' -> '= []'
+            elif tx_pool1.pre_txs:
+                log.info("------has previous transaction------")
+                data = len(tx_pool1.pre_txs)
+                msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
+                self.send(msg)
             else:
                 log.info("shake")
                 block_chain = BlockChain()
@@ -421,11 +426,6 @@ class TCPClient(object):
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
             tx_pool1 = TxPool()  # 7.20
-            if tx_pool1.pre_txs:
-                log.info("------has previous transaction------")
-                data = len(tx_pool1.pre_txs)
-                msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
-                self.send(msg)
 
     def handle_shake(self, msg):
         log.info("------client handle_shake------")  # 7.10
