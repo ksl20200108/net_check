@@ -426,7 +426,8 @@ class TCPClient(object):
                             "last_height": last_height,
                             "genesis_block": genesis_block.serialize()
                         }
-                    msg = Msg(Msg.HAND_
+                    msg = Msg(Msg.HAND_SHAKE_MSG, data)
+                    self.send(msg)
             else:
                 log.info("shake")
                 block_chain = BlockChain()
