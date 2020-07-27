@@ -89,7 +89,7 @@ class TCPServer(object):
             header = eval(header_bytes.decode())
             send_size = header["send_size"]
             recv_data = conn.recv(send_size)    # 7.21
-            # log.info("recv_data:"+str(recv_data)[1:])   # 7.8
+            log.info("------server handle_loop recv_data:" + str(recv_data)[1:] + "------")   # 7.8
             # log.info("and the bytes are: " + recv_data.decode()) # 7.8
             if not recv_data:  # 7.7
                 log.info("------server handle_loop connection broke------")
