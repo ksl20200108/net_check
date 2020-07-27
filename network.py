@@ -390,6 +390,7 @@ class TCPClient(object):
         # log.info("------'client shake_loop'------") # 7.8
         while True:
             log.info("------client shake_loop ip:" + self.ip + "\tport:" + str(self.port) + "------")  # 7.11
+            tx_pool1 = TxPool()  # 7.20
             if self.txs:
                 log.info("------client server has txs------")  # 7.10
                 data = [tx.serialize() for tx in self.txs]
@@ -425,7 +426,6 @@ class TCPClient(object):
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
                 self.send(msg)
-            tx_pool1 = TxPool()  # 7.20
 
     def handle_shake(self, msg):
         log.info("------client handle_shake------")  # 7.10
