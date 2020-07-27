@@ -232,10 +232,13 @@ def main():
         bc1 = BlockChain()
         last_blo = bc1.get_last_block()
         last_height = last_blo.block_header.height
+        j = 0
         for i in range(0, last_height+1):
+            j += 1
             blo = bc1.get_block_by_height(i)
             print(blo.serialize())
             print("")
+        print(j)
 
 
 if __name__ == "__main__":
