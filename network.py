@@ -405,13 +405,17 @@ class TCPClient(object):
                     genesis_block = block_chain[0]
                 except IndexError as e:
                     genesis_block = None
+                if block:
+                    last_height = block.block_header.height
+                else:
+                    last_height = -1
                 data = {
                     "last_height": -1,
                     "genesis_block": ""
                 }
                 if genesis_block:
                     data = {
-                        "last_height": block.block_header.height,
+                        "last_height": last_height,
                         "genesis_block": genesis_block.serialize()
                     }
                 msg = Msg(Msg.HAND_SHAKE_MSG, data)
