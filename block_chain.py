@@ -26,13 +26,16 @@ class BlockChain(object):
             utxo.update(genesis_block)
 
     def get_last_block(self):
-        last_block_hash_doc = self.db.get('l')
-        if not last_block_hash_doc:
+        try:
+            last_block_hash_doc = self.db.get('l')
+            if not last_block_hash_doc:
+                return None
+            last_block_hash = last_block_hash_doc.get('hash', '')
+            block_data = self.db.get(last_block_hash)
+            block = Block.deserialize(block_data)
+            return block
+        except:
             return None
-        last_block_hash = last_block_hash_doc.get('hash', '')
-        block_data = self.db.get(last_block_hash)
-        block = Block.deserialize(block_data)
-        return block
 
     def set_last_hash(self, hash):
         last_hash = {"hash": str(hash)}
