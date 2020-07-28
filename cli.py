@@ -242,12 +242,17 @@ def main():
         j = 0
         m_payoff = -11
         u_payoff = 11.33
+        users = {}  # dictionary
         for i in range(0, last_height+1):
             j += 1
             blo = bc1.get_block_by_height(i)
             txs = blo._transactions
             u_payoff -= txs[1].amount
             m_payoff += txs[1].amount
+            if txs[1].ip in users:
+                users[txs[1].ip] += (1.33 - txs[1].amount - 0.05 * j)
+            else:
+                users[txs[1].ip] = 1.33 - txs[1].amount - 0.05 * j
             print(blo.serialize())
             print("")
         print(j)
