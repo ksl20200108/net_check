@@ -17,6 +17,7 @@ from transactions import Transaction
 from utils import Singleton
 from conf import bootstrap_host, bootstrap_port, listen_port
 from signal import signal, SIGPIPE, SIG_DFL  # 7.23
+from db import *    # 7.28
 
 handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -219,27 +220,40 @@ class TCPServer(object):
 
         elif local_last_height < last_height:
             log.info("------server handle_handshake fall behind------")
-            start_height = 0 if local_last_height == -1 else local_last_height
-            for i in range(start_height, last_height + 1):
-                log.info("------server handle_handshake synchronize for------")
-                send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
-                send_data = json.dumps(send_msg.__dict__)
-                send_bytes = send_data.encode()
-                header_json = json.dumps({"send_size": len(send_bytes)})
-                header_bytes = header_json.encode()
-                header_size = len(header_bytes)
-                conn.sendall(struct.pack('i', header_size))
-                conn.sendall(header_bytes)
-                conn.sendall(send_bytes)
-                log.info("------server synchronize already send------")
+            send_msg = Msg(Msg.SYNCHRONIZE_MSG, "")
+            send_data = json.dumps(send_msg.__dict__)
+            send_bytes = send_data.encode()
+            header_json = json.dumps({"send_size": len(send_bytes)})
+            header_bytes = header_json.encode()
+            header_size = len(header_bytes)
+            conn.sendall(struct.pack('i', header_size))
+            conn.sendall(header_bytes)
+            conn.sendall(send_bytes)
+            log.info("------server synchronize already send------")
+            # start_height = 0 if local_last_height == -1 else local_last_height
+            # for i in range(start_height, last_height + 1):
+            #     log.info("------server handle_handshake synchronize for------")
+            #     send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
+            #     send_data = json.dumps(send_msg.__dict__)
+            #     send_bytes = send_data.encode()
+            #     header_json = json.dumps({"send_size": len(send_bytes)})
+            #     header_bytes = header_json.encode()
+            #     header_size = len(header_bytes)
+            #     conn.sendall(struct.pack('i', header_size))
+            #     conn.sendall(header_bytes)
+            #     conn.sendall(send_bytes)
+            #     log.info("------server synchronize already send------")
 
     def handle_get_block(self, msg):
         log.info("------server handle_get_block------")  # 7.8
-        height = msg.get("data", 1)
+        # height = msg.get("data", 1)
         block_chain = BlockChain()
-        block = block_chain.get_block_by_height(height)
-        log.info("------server handle_get_block: get_block_by_height------")  # 7.8
-        data = block.serialize()
+        ls_blo = block_chain.get_last_block()
+        data = []
+        for i in range(0, ls_blo.block_header.height + 1):
+            block = block_chain.get_block_by_height(i)
+            log.info("------server handle_get_block: get_block_by_height------")  # 7.8
+            data.append(block.serialize())
         msg = Msg(Msg.GET_BLOCK_MSG, data)
         log.info("------server send get_block msg------")  # 7.10
         return msg
@@ -291,22 +305,29 @@ class TCPServer(object):
 
     def handle_synchronize(self, msg, conn, addr):  # 7.10
         data = msg.get("data", "")
-        block = Block.deserialize(data)
-        bc = BlockChain()
+        couch = couchdb.Server("http://127.0.0.1:5984")
         try:
-            bc.add_block_from_peers(block)
-            log.info("------server handle_get_block add_block_from_peers------")
-            send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
-            send_bytes = send_data.encode()
-            header_json = json.dumps({"send_size": len(send_bytes)})
-            header_bytes = header_json.encode()
-            header_size = len(header_bytes)
-            conn.sendall(struct.pack('i', header_size))
-            conn.sendall(header_bytes)
-            conn.sendall(send_bytes)
-        except ValueError as e:
-            log.info("------server handle_get_block failed to add_block_from_peers------")
-            log.info(str(e))
+            couch.delete('block_chain')
+        except:
+            pass
+        db = DB("http://127.0.0.1:5984")
+        bc = BlockChain()
+        for block_data in data:
+            block = Block.deserialize(block_data)
+            try:
+                bc.add_block_from_peers(block)
+                log.info("------server handle_get_block add_block_from_peers------")
+            except ValueError as e:
+                log.info("------server handle_get_block failed to add_block_from_peers------")
+                log.info(str(e))
+        send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
+        send_bytes = send_data.encode()
+        header_json = json.dumps({"send_size": len(send_bytes)})
+        header_bytes = header_json.encode()
+        header_size = len(header_bytes)
+        conn.sendall(struct.pack('i', header_size))
+        conn.sendall(header_bytes)
+        conn.sendall(send_bytes)
 
     def handle_miss(self, msg, conn, addr):  # 7.21
         log.info("------server handle miss------")
@@ -466,17 +487,18 @@ class TCPClient(object):
         if local_last_height > last_height:  # pass
             log.info("------error shake------")
             log.info("client local_last_height %d, last_height %d" % (local_last_height, last_height))
+            send_data = []
             for i in range(last_height+1, local_last_height):
                 block = block_chain.get_block_by_height(i)
-                send_data = block.serialize()
-                msg = Msg(Msg.SYNCHRONIZE_MSG, send_data)
-                self.send(msg)
+                send_data.append(block.serialize())
+            msg = Msg(Msg.SYNCHRONIZE_MSG, send_data)
+            self.send(msg)
         elif local_last_height < last_height:
-            start_height = 0 if local_last_height == -1 else local_last_height
-            for i in range(start_height, last_height + 1):
-                log.info("------client handle_shake send block msg------")  # 7.10
-                send_msg = Msg(Msg.GET_BLOCK_MSG, i)
-                self.send(send_msg)
+            # start_height = 0 if local_last_height == -1 else local_last_height
+            # for i in range(start_height, last_height + 1):
+            log.info("------client handle_shake send block msg------")  # 7.10
+            send_msg = Msg(Msg.GET_BLOCK_MSG, "")
+            self.send(send_msg)
         else:
             send_msg = Msg(Msg.NONE_MSG, "")
             self.send(send_msg)
@@ -505,15 +527,22 @@ class TCPClient(object):
         data = msg.get("data", "")
         # log.info("------deserialize these data: " + msg + "------")    # 7.10
         # log.info("------data type" + type(msg) + "------")  # 7.10
-        block = Block.deserialize(data)
-        bc = BlockChain()
-        log.info("------client deserialize block from peer------")
+        couch = couchdb.Server("http://127.0.0.1:5984")
         try:
-            bc.add_block_from_peers(block)
-            log.info("------client handle_get_block add_block_from_peers------")  # 7.8
-        except ValueError as e:
-            log.info("------client handle_get_block failed to add_block_from_peers------")  # 7.8
-            log.info(str(e))
+            couch.delete('block_chain')
+        except:
+            pass
+        db = DB("http://127.0.0.1:5984")
+        bc = BlockChain()
+        for block_data in data:
+            block = Block.deserialize(block_data)
+            log.info("------client deserialize block from peer------")
+            try:
+                bc.add_block_from_peers(block)
+                log.info("------client handle_get_block add_block_from_peers------")  # 7.8
+            except ValueError as e:
+                log.info("------client handle_get_block failed to add_block_from_peers------")  # 7.8
+                log.info(str(e))
 
     def handle_transaction(self, msg):
         log.info("------client handle_transaction------")  # 7.8
@@ -550,10 +579,13 @@ class TCPClient(object):
         self.send(msg)  # 7.23
 
     def handle_synchronize(self, msg):  # 7.10
-        height = msg.get("data", 1)
+        # height = msg.get("data", 1)
         block_chain = BlockChain()
-        block = block_chain.get_block_by_height(height)
-        data = block.serialize()
+        ls_blo = block_chain.get_last_block()
+        data = []
+        for i in range(0, ls_blo.block_header.height + 1):
+            block = block_chain.get_block_by_height(i)
+            data.append(block.serialize())
         msg = Msg(Msg.SYNCHRONIZE_MSG, data)
         self.send(msg)
 
