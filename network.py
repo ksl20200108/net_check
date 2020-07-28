@@ -615,6 +615,8 @@ class PeerServer(Singleton):
             self.nodes = []
         if not hasattr(self, "ips"):
             self.ips = []
+        if not hasattr(self, "longest_chain"):
+            self.longest_chain = None
 
     def get_ip(self, ifname='ens33'):  # enp2s0
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

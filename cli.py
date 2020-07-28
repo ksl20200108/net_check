@@ -233,12 +233,19 @@ def main():
         last_blo = bc1.get_last_block()
         last_height = last_blo.block_header.height
         j = 0
+        m_payoff = -11
+        u_payoff = 11.33
         for i in range(0, last_height+1):
             j += 1
             blo = bc1.get_block_by_height(i)
+            txs = blo._transactions
+            u_payoff -= txs[1].amount
+            m_payoff += txs[1].amount
             print(blo.serialize())
             print("")
         print(j)
+        print("m_payoff ", m_payoff)
+        print("u_payoff ", u_payoff)
 
 
 if __name__ == "__main__":
