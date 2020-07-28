@@ -207,7 +207,7 @@ class TCPServer(object):
             }
         msg = Msg(Msg.HAND_SHAKE_MSG, data)
         send_data = json.dumps(msg.__dict__)
-        # time.sleep(1)  # 7.13
+        time.sleep(1)  # 7.13
         send_bytes = send_data.encode()
         header_json = json.dumps({"send_size": len(send_bytes)})
         header_bytes = header_json.encode()
