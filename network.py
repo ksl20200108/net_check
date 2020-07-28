@@ -308,26 +308,26 @@ class TCPServer(object):
     #         log.info("------server handle_get_block failed to add_block_from_peers------")
     #         log.info(str(e))
 
-    # def handle_miss(self, msg, conn, addr):  # 7.21
-    #     log.info("------server handle miss------")
-    #     data = msg.get("data", "")
-    #     tx_pool1 = TxPool()
-    #     log.info("------server tx: " + str(len(tx_pool1.pre_txs)) + "client tx: " + str(int(data)) + "------")
-    #     if len(tx_pool1.pre_txs) < int(data):
-    #         log.info("------shorter------")
-    #         msg = Msg(Msg.GET_TRANSACTION_MSG, "")
-    #         return msg
-    #     elif len(tx_pool1.pre_txs) > int(data):
-    #         log.info("------longer------")
-    #         data = [tx.serialize() for tx in tx_pool1.txs]
-    #         msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
-    #         # send_data = json.dumps(msg.__dict__)
-    #         # conn.sendall(send_data.encode())
-    #         return msg
-    #     else:
-    #         log.info("------the same------")
-    #         msg = Msg(Msg.NONE_MSG, "")
-    #         return msg
+    def handle_miss(self, msg, conn, addr):  # 7.21
+        log.info("------server handle miss------")
+        data = msg.get("data", "")
+        tx_pool1 = TxPool()
+        log.info("------server tx: " + str(len(tx_pool1.pre_txs)) + "client tx: " + str(int(data)) + "------")
+        if len(tx_pool1.pre_txs) < int(data):
+            log.info("------shorter------")
+            msg = Msg(Msg.GET_TRANSACTION_MSG, "")
+            return msg
+        elif len(tx_pool1.pre_txs) > int(data):
+            log.info("------longer------")
+            data = [tx.serialize() for tx in tx_pool1.txs]
+            msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
+            # send_data = json.dumps(msg.__dict__)
+            # conn.sendall(send_data.encode())
+            return msg
+        else:
+            log.info("------the same------")
+            msg = Msg(Msg.NONE_MSG, "")
+            return msg
 
 
 class TCPClient(object):
