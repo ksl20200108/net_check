@@ -56,8 +56,8 @@ class Msg(object):
     GET_BLOCK_MSG = 2
     TRANSACTION_MSG = 3
     # SYNCHRONIZE_MSG = 4
-    # MISS_TRANSACTION_MSG = 5  # 7.21
-    # GET_TRANSACTION_MSG = 6   # 7.21
+    MISS_TRANSACTION_MSG = 5  # 7.21
+    GET_TRANSACTION_MSG = 6   # 7.21
 
     def __init__(self, code, data):
         self.code = code
