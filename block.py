@@ -27,9 +27,9 @@ class Block(object):
     def mine(self, bc):
         pow = ProofOfWork(self)
         print("mining trans", self._transactions)
-        for tx in self._transactions:
-            if not bc.verify_transaction(tx):
-                raise TransactionVerifyError('transaction verify error')
+        # for tx in self._transactions: # 7.28
+            # if not bc.verify_transaction(tx):
+                # raise TransactionVerifyError('transaction verify error')
         try:
             nonce, _ = pow.run()
         except NonceNotFoundError as e:
