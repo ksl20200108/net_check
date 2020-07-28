@@ -190,7 +190,7 @@ class BlockChain(object):
                         spent_txos[vin_txid] = txid_vouts
         return unspent_txs
 
-    def new_transaction(self, from_addr, to_addr, amount, fee):
+    def new_transaction(self, from_addr, to_addr, amount, fee, ip=None):    # 7.28
         inputs = []
         outputs = []
 
@@ -213,7 +213,7 @@ class BlockChain(object):
             # a change
             outputs.append(TXOutput(acc - amount - fee, from_addr))   # change
 
-        tx = Transaction(inputs, outputs, fee)  # change
+        tx = Transaction(inputs, outputs, fee, ip)  # change 7.28
         tx.set_id()
         self.sign_transaction(tx, from_wallet.private_key)
         return tx

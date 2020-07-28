@@ -1,6 +1,7 @@
 # coding:utf-8
 import argparse
 import threading
+import socket # 7.28
 from block_chain import *
 from wallet import Wallet
 from wallets import Wallets
@@ -101,7 +102,8 @@ class Cli(object):
     def send(self, from_addr, to_addr, amount):    # change
         bc = BlockChain()
         fee = random.uniform(0.1, 0.6)
-        tx = bc.new_transaction(from_addr, to_addr, amount, fee)    # change
+        ip = get_ip()
+        tx = bc.new_transaction(from_addr, to_addr, amount, fee, ip)    # change 7.28
         tx_pool = TxPool()
         tx_pool.add(tx)
         try:
@@ -142,6 +144,11 @@ class Cli(object):
         # return txs5
         return packing()
 
+
+def get_ip(ifname='ens33'):  # enp2s0
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(
+        fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
 
 def start():    # wait : thread add_block(txs)   txs = []   packing function >1MB or no tx verify if tx are valid
     couch = couchdb.Server("http://127.0.0.1:5984")
