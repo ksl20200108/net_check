@@ -166,9 +166,9 @@ class TCPServer(object):
         #     log.info("------server receive SYNCHRONIZE_MSG------")
         #     self.handle_synchronize(msg, conn, addr)
         #     res_msg = None
-        # elif code == Msg.MISS_TRANSACTION_MSG:  # 7.21
-        #     log.info("------server receive MISS_TRANSACTION_MSG------")
-        #     res_msg = self.handle_miss(msg, conn, addr)
+        elif code == Msg.MISS_TRANSACTION_MSG:  # 7.21
+            log.info("------server receive MISS_TRANSACTION_MSG------")
+            res_msg = self.handle_miss(msg, conn, addr)
         else:
             return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)    # '{"code": 0, "data":""}'    # 7.23
 
