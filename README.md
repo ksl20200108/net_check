@@ -23,7 +23,7 @@
 
 # Changes:
 
-experiment1: network, txpool
+experiment1: network, txpool, block_chain, block
 
 # Tips
 
