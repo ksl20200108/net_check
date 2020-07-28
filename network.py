@@ -379,8 +379,8 @@ class TCPClient(object):
             self.handle_get_block(msg)
         elif code == Msg.TRANSACTION_MSG:
             self.handle_transaction(msg)
-        elif code == Msg.SYNCHRONIZE_MSG:  # 7.10
-            self.handle_synchronize(msg)  # 7.10
+        # elif code == Msg.SYNCHRONIZE_MSG:  # 7.10
+        #     self.handle_synchronize(msg)  # 7.10
         elif code == Msg.GET_TRANSACTION_MSG:  # 7.21
             self.handle_get_transaction(msg)
         elif code == Msg.MISS_TRANSACTION_MSG:  # 7.21
@@ -500,20 +500,20 @@ class TCPClient(object):
         #     self.send(msg)
         #     time.sleep(30)
 
-    # def handle_get_block(self, msg):
-    #     log.info("------client handle_get_block------")  # 7.8
-    #     data = msg.get("data", "")
-    #     # log.info("------deserialize these data: " + msg + "------")    # 7.10
-    #     # log.info("------data type" + type(msg) + "------")  # 7.10
-    #     block = Block.deserialize(data)
-    #     bc = BlockChain()
-    #     log.info("------client deserialize block from peer------")
-    #     try:
-    #         bc.add_block_from_peers(block)
-    #         log.info("------client handle_get_block add_block_from_peers------")  # 7.8
-    #     except ValueError as e:
-    #         log.info("------client handle_get_block failed to add_block_from_peers------")  # 7.8
-    #         log.info(str(e))
+    def handle_get_block(self, msg):
+        log.info("------client handle_get_block------")  # 7.8
+        data = msg.get("data", "")
+        # log.info("------deserialize these data: " + msg + "------")    # 7.10
+        # log.info("------data type" + type(msg) + "------")  # 7.10
+        block = Block.deserialize(data)
+        bc = BlockChain()
+        log.info("------client deserialize block from peer------")
+        try:
+            bc.add_block_from_peers(block)
+            log.info("------client handle_get_block add_block_from_peers------")  # 7.8
+        except ValueError as e:
+            log.info("------client handle_get_block failed to add_block_from_peers------")  # 7.8
+            log.info(str(e))
 
     def handle_transaction(self, msg):
         log.info("------client handle_transaction------")  # 7.8
