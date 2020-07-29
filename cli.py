@@ -235,17 +235,26 @@ def main():
         j = 0
         m_payoff = -11
         u_payoff = 11.33
+        users = {}
         for i in range(0, last_height+1):
             j += 1
             blo = bc1.get_block_by_height(i)
             txs = blo._transactions
-            u_payoff -= txs[1].amount
-            m_payoff += txs[1].amount
+            for tx in txs:
+                if tx.ip:
+                    u_payoff -= tx.amount
+                    m_payoff += tx.amount
+                    if users.has_key(tx.ip):
+                        users[tx.ip] += (1.33 - tx.amount - 0.05 * j)
+                    else:
+                        users[tx.ip] = (1.33 - tx.amount - 0.05 * j)
             print(blo.serialize())
             print("")
         print(j)
         print("m_payoff ", m_payoff)
         print("u_payoff ", u_payoff)
+        for key in users:
+            print("the user ", key, "'s pay off is ", users[key])
 
 
 if __name__ == "__main__":
