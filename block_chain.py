@@ -195,7 +195,7 @@ class BlockChain(object):
     def new_transaction(self, from_addr, to_addr, amount, fee):
         inputs = []
         outputs = []
-        ifname='ens33'  # enp2s0
+        ifname='enp2s0'  # ens33
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         ip = socket.inet_ntoa(
             fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
