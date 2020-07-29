@@ -64,13 +64,14 @@ class TXInput(object):
 
 
 class Transaction(object):
-    def __init__(self, vins, vouts, amount=0):
+    def __init__(self, vins, vouts, amount=0, ip=None):
         self.txid = ''
         self.vins = vins
         self.vouts = vouts
         self.generation_time = time.time()      # change
         self.amount = amount   # change 6.19
         self.fee_size_ratio = self.amount / (sys.getsizeof(self.vins) + sys.getsizeof(self.vouts) + sys.getsizeof(self.generation_time) + sys.getsizeof(self.amount))   # change 6.19
+        self.ip = None  # change 7.29
 
     def set_id(self):
         data_list = [str(vin.serialize()) for vin in self.vins]
@@ -90,7 +91,8 @@ class Transaction(object):
             'vouts': [vout.serialize() for vout in self.vouts],
             'generation_time': self.generation_time,  # change
             'amount': self.amount,   # change
-            'fee_size_ratio': self.fee_size_ratio   # change
+            'fee_size_ratio': self.fee_size_ratio,   # change
+            'ip': self.ip   # change 7.29
         }
 
     @classmethod
@@ -101,6 +103,7 @@ class Transaction(object):
         generation_time = data.get('generation_time', '')   # change
         amount = data.get('amount', '') # change
         fee_size_ratio = data.get('fee_size_ratio', '') # change
+        ip = data.get('ip', '') # change 7.29
         vins = []
         vouts = []
         for vin_data in vins_data:
@@ -113,6 +116,7 @@ class Transaction(object):
         tx.generation_time = generation_time    # change
         tx.amount = amount  # change
         tx.fee_size_ratio = fee_size_ratio  # change
+        tx.ip = ip  # change 7.29
         return tx
 
     @classmethod
@@ -126,6 +130,7 @@ class Transaction(object):
         tx.generation_time = time.time()    # change 6.19
         tx.amount = 50 + fee  # change
         tx.fee_size_ratio = (50 + fee) / (sys.getsizeof(tx.vins) + sys.getsizeof(tx.vouts) + sys.getsizeof(tx.generation_time) + sys.getsizeof(tx.amount))  # change
+        tx.ip = None    # change 7.29
         return tx
 
     def __repr__(self):

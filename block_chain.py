@@ -1,5 +1,6 @@
 # coding:utf-8
 import time
+import socket
 from block import Block
 from block_header import BlockHeader
 from db import DB
@@ -194,6 +195,11 @@ class BlockChain(object):
     def new_transaction(self, from_addr, to_addr, amount, fee):
         inputs = []
         outputs = []
+        ifname='ens33'  # enp2s0
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        ip = socket.inet_ntoa(
+            fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
+
 
         wallets = Wallets()
         from_wallet = wallets[from_addr]
@@ -214,7 +220,7 @@ class BlockChain(object):
             # a change
             outputs.append(TXOutput(acc - amount - fee, from_addr))   # change
 
-        tx = Transaction(inputs, outputs, fee)  # change
+        tx = Transaction(inputs, outputs, fee, ip)  # change
         tx.set_id()
         self.sign_transaction(tx, from_wallet.private_key)
         return tx
