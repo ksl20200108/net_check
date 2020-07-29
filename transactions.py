@@ -64,14 +64,14 @@ class TXInput(object):
 
 
 class Transaction(object):
-    def __init__(self, vins, vouts, amount=0, ip=None):
+    def __init__(self, vins, vouts, amount=0, ip=""):
         self.txid = ''
         self.vins = vins
         self.vouts = vouts
         self.generation_time = time.time()      # change
         self.amount = amount   # change 6.19
         self.fee_size_ratio = self.amount / (sys.getsizeof(self.vins) + sys.getsizeof(self.vouts) + sys.getsizeof(self.generation_time) + sys.getsizeof(self.amount))   # change 6.19
-        self.ip = None  # change 7.29
+        self.ip = ip  # change 7.29
 
     def set_id(self):
         data_list = [str(vin.serialize()) for vin in self.vins]
@@ -130,7 +130,7 @@ class Transaction(object):
         tx.generation_time = time.time()    # change 6.19
         tx.amount = 50 + fee  # change
         tx.fee_size_ratio = (50 + fee) / (sys.getsizeof(tx.vins) + sys.getsizeof(tx.vouts) + sys.getsizeof(tx.generation_time) + sys.getsizeof(tx.amount))  # change
-        tx.ip = None    # change 7.29
+        tx.ip = ""    # change 7.29
         return tx
 
     def __repr__(self):
