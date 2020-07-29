@@ -1,6 +1,6 @@
 # coding:utf-8
 import time
-import socket
+import socket, struct, fcntl
 from block import Block
 from block_header import BlockHeader
 from db import DB
@@ -133,11 +133,11 @@ class BlockChain(object):
         height = -1
         if last_block:
             height = last_block.block_header.height
-        if index < height and index >= 0:
+        if index == height:
+            return last_block
+        elif index < height and index >= 0:
             block = self.get_block_by_height(index)
             return block
-        elif index == height:
-            return last_block
         else:
             raise IndexError('Index is out of range')
 
