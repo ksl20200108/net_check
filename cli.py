@@ -244,7 +244,7 @@ def main():
                 if tx.ip:
                     u_payoff -= tx.amount
                     m_payoff += tx.amount
-                    if users.has_key(tx.ip):
+                    if tx.ip in users.keys():
                         users[tx.ip] += (1.33 - tx.amount - 0.05 * j)
                     else:
                         users[tx.ip] = (1.33 - tx.amount - 0.05 * j)
