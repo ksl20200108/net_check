@@ -33,15 +33,4 @@ Also, it is suggested that you should consider to use a machine with stable perf
 
 # 笔记
 
-此版本解决了交易广播问题，并将数据库基础数据（创世区块和UTXO）上传为bctada.md文件。wallet.dat为钱包文件，用于收发数据。
-recv函数通信接收的数据大小还是不够，还是出现"SyntaxError: unexpected EOF while parsing"的错误，数据断了一半，所以把recv的参数再增加一倍。
-
-更新了产生随机交易命令的程序(random_distributions.py && random_distribution2.py)。
-
-更新了E1.md和E2.md里随机交易命令的数据。
-
-数据库的线程安全又问题，尝试解决。
-
-命令行会有重复输出一次的情况，尚不清楚原因。
-
-python3 cli.py send --from 15WoXQX94LVP7qrcx7wNa2NsFKbBescYyB --to 1HhmVDC9zgMC9oh1ckhESrdPsyJwaq5wpg --amount 1 --fee 
+正常版本，除了挖矿后的区块同步有问题
