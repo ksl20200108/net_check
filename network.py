@@ -228,7 +228,7 @@ class TCPServer(object):
     def handle_get_block(self, msg, conn, addr):
         log.info("------server handle_get_block from " + str(addr) + "------")  # 7.8
         get_range = msg.get("data", 1)
-        log.info("------with height " + str(height) + "------")
+        log.info("------with range " + str(get_range[0]) + " " + str(get_range[1]) + "------")
         block_chain = BlockChain()
         data = []
         for height in range(get_range[0], get_range[1]):
@@ -312,14 +312,14 @@ class TCPServer(object):
         try:
             ls_blo = bc.get_last_block()
             if ls_blo:
-                log.info("s handle_synchronize with local last height and last height " + str(ls_blo.block_header.height) + " " + str(block.block_header.height))
+                # log.info("s handle_synchronize with local last height and last height " + str(ls_blo.block_header.height) + " " + str(block.block_header.height))
                 for data in datas:
                     block = Block.deserialize(data)
                     if block.block_header.height > ls_blo.block_header.height: 
                         bc.add_block_from_peers(block)
                         log.info("------server handle_get_block add_block_from_peers------")
                     else:
-                        log.info("------error add as last height " + str(block.block_header.height) + "------")
+                        log.info("------error add------")
             else:
                 for data in datas:
                     block = Block.deserialize(data)
