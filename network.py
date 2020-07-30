@@ -158,7 +158,7 @@ class TCPServer(object):
             res_msg = None  # 7.10
         elif code == Msg.GET_BLOCK_MSG:
             log.info("------server receive GET_BLOCK_MSG------")
-            res_msg = self.handle_get_block(msg)
+            res_msg = self.handle_get_block(msg, conn, addr)
         elif code == Msg.TRANSACTION_MSG:
             log.info("------server receive TRANSACTION_MSG------")
             res_msg = self.handle_transaction(msg, conn, addr)  # 7.20
@@ -234,9 +234,10 @@ class TCPServer(object):
                 conn.sendall(send_bytes)
                 log.info("------server synchronize already send------")
 
-    def handle_get_block(self, msg):
-        log.info("------server handle_get_block------")  # 7.8
+    def handle_get_block(self, msg, conn, addr):
+        log.info("------server handle_get_block from " + str(addr) + "------")  # 7.8
         height = msg.get("data", 1)
+        log.info("------with height " + str(height) + "------")
         block_chain = BlockChain()
         block = block_chain.get_block_by_height(height)
         log.info("------server handle_get_block: get_block_by_height------")  # 7.8
