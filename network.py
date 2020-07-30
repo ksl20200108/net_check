@@ -292,9 +292,10 @@ class TCPServer(object):
 
     def handle_synchronize(self, msg, conn, addr):  # 7.10
         data = msg.get("data", "")
+        log.info("------s handle_synchronize from " + str(addr) + "------")
+        log.info("------with data " + str(data) + "------")
         block = Block.deserialize(data)
         bc = BlockChain()
-        log.info("------s handle_synchronize from " + str(addr) + "------")
         try:
             ls_blo = bc.get_last_block()
             if ls_blo:
@@ -513,8 +514,9 @@ class TCPClient(object):
         #     time.sleep(30)
 
     def handle_get_block(self, msg):
-        log.info("------client handle_get_block------")  # 7.8
         data = msg.get("data", "")
+        log.info("------client handle_get_block from " + str(self.ip) + "------")  # 7.8
+        log.info("------with data " + str(data) + "------")
         # log.info("------deserialize these data: " + msg + "------")    # 7.10
         # log.info("------data type" + type(msg) + "------")  # 7.10
         block = Block.deserialize(data)
