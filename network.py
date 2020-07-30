@@ -480,7 +480,7 @@ class TCPClient(object):
         if local_last_height > last_height:  # pass
             log.info("------error shake------")
             log.info("client local_last_height %d, last_height %d" % (local_last_height, last_height))
-            for i in range(last_height+1, local_last_height):
+            for i in range(last_height+1, local_last_height+1):
                 block = block_chain.get_block_by_height(i)
                 send_data = block.serialize()
                 msg = Msg(Msg.SYNCHRONIZE_MSG, send_data)
