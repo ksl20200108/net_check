@@ -295,11 +295,15 @@ class TCPServer(object):
         bc = BlockChain()
         try:
             ls_blo = bc.get_last_block()
-            if block.block_header.height > ls_blo.block_header.height: 
+            if ls_blo:
+                if block.block_header.height > ls_blo.block_header.height: 
+                    bc.add_block_from_peers(block)
+                    log.info("------server handle_get_block add_block_from_peers------")
+                else:
+                    log.info("------error add------")
+            else:
                 bc.add_block_from_peers(block)
                 log.info("------server handle_get_block add_block_from_peers------")
-            else:
-                log.info("------error add------")
             send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
             send_bytes = send_data.encode()
             header_json = json.dumps({"send_size": len(send_bytes)})
@@ -514,11 +518,15 @@ class TCPClient(object):
         log.info("------client deserialize block from peer------")
         try:
             ls_blo = bc.get_last_block()
-            if block.block_header.height > ls_blo.block_header.height:
-                bc.add_block_from_peers(block)
-                log.info("------client handle_get_block add_block_from_peers------")  # 7.8
+            if ls_blo:
+                if block.block_header.height > ls_blo.block_header.height:
+                    bc.add_block_from_peers(block)
+                    log.info("------client handle_get_block add_block_from_peers------")  # 7.8
+                else:
+                    log.info("------error add------")
             else:
-                log.info("------error add------")
+                bc.add_block_from_peers(block)
+                log.info("------client handle_get_block add_block_from_peers------")
         except ValueError as e:
             log.info("------client handle_get_block failed to add_block_from_peers------")  # 7.8
             log.info(str(e))
