@@ -306,7 +306,7 @@ class TCPServer(object):
     def handle_synchronize(self, msg, conn, addr):  # 7.10
         datas = msg.get("data", "")
         log.info("------s handle_synchronize from " + str(addr) + "------")
-        log.info("------with data " + str(data) + "------")
+        log.info("------with data " + str(datas) + "------")
         # block = Block.deserialize(data)
         bc = BlockChain()
         try:
@@ -534,7 +534,7 @@ class TCPClient(object):
     def handle_get_block(self, msg):
         datas = msg.get("data", "")
         log.info("------client handle_get_block from " + str(self.ip) + "------")  # 7.8
-        log.info("------with data " + str(data) + "------")
+        log.info("------with data " + str(datas) + "------")
         # log.info("------deserialize these data: " + msg + "------")    # 7.10
         # log.info("------data type" + type(msg) + "------")  # 7.10
         # block = Block.deserialize(data)
