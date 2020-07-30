@@ -300,6 +300,7 @@ class TCPServer(object):
         try:
             ls_blo = bc.get_last_block()
             if ls_blo:
+                log.info("s handle_synchronize with local last height and last height " + str(ls_blo.block_header.height) + " " + str(block.block_header.height))
                 if block.block_header.height > ls_blo.block_header.height: 
                     bc.add_block_from_peers(block)
                     log.info("------server handle_get_block add_block_from_peers------")
@@ -526,6 +527,7 @@ class TCPClient(object):
         try:
             ls_blo = bc.get_last_block()
             if ls_blo:
+                log.info("c handle_get_block local last height and last height " + str(ls_blo.block_header.height) + " " + str(block.block_header.height))
                 if block.block_header.height > ls_blo.block_header.height:
                     bc.add_block_from_peers(block)
                     log.info("------client handle_get_block add_block_from_peers------")  # 7.8
