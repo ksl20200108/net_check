@@ -178,9 +178,10 @@ class TCPServer(object):
             return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
 
     def handle_handshake(self, msg, conn, addr):
-        log.info("------server handle_handshake from " + "------")  # 7.10
+        log.info("------server handle_handshake from " + str(addr) + "------")  # 7.10
         data = msg.get("data", "")
         last_height = data.get("last_height", 0)
+        log.info("------with last_height " + str(last_height) + "------")
         block_chain = BlockChain()
         block = block_chain.get_last_block()
 
@@ -465,6 +466,7 @@ class TCPClient(object):
         log.info("------client handle_shake from " + str(self.ip) + "------")  # 7.10
         data = msg.get("data", "")
         last_height = data.get("last_height", 0)
+        log.info("------with last height " + str(last_height) + "------")
         block_chain = BlockChain()
         block = block_chain.get_last_block()
         if block:
