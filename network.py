@@ -237,10 +237,11 @@ class TCPServer(object):
                 block = None
                 try:
                     block = block_chain.get_block_by_height(height)
-                    already_get = True
-                    break
                 except:
                     continue
+                if block:
+                    already_get = True
+                    break
             if already_get:
                 block = block.serialize()
                 data.append(block)
@@ -500,10 +501,11 @@ class TCPClient(object):
                     block = None
                     try:
                         block = block_chain.get_block_by_height(i)
-                        already_get = True
-                        break
                     except:
                         continue
+                    if block:
+                        already_get = True
+                        break
                 if already_get:
                     send_data.append(block.serialize())
                 elif send_data:
@@ -599,17 +601,30 @@ class TCPClient(object):
         self.send(msg)  # 7.23
 
     def handle_synchronize(self, msg):  # 7.10
-        height = msg.get("data", 1)
+        synchronize_range = msg.get("data", 1)
         block_chain = BlockChain()
-        while True:
-            block = None
-            try:
-                block = block_chain.get_block_by_height(height)
-            except:
-                continue
-            if block:
-                break
-        data = block.serialize()
+        data = []
+        for height in range(synchronize_range[0], synchronize_range[1]):
+            already_get = False
+            for i in range(0, 2):
+                block = None
+                try:
+                    block = block_chain.get_block_by_height(height)
+                except:
+                    continue
+                if block:
+                    already_get = True
+                    break
+            if already_get:
+                data.append(block.serialize())
+            elif data:
+                msg = Msg(Msg.SYNCHRONIZE_MSG, data)
+                self.send(msg)
+                return
+            else:
+                msg = Msg(Msg.NONE_MSG, "")
+                self.send(msg)
+                return
         msg = Msg(Msg.SYNCHRONIZE_MSG, data)
         self.send(msg)
 
