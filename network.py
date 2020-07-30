@@ -223,6 +223,8 @@ class TCPServer(object):
             block = None
             try:
                 block = block_chain.get_block_by_height(height)
+            except:
+                continue
             if block:
                 break
         log.info("------server handle_get_block: get_block_by_height------")  # 7.8
@@ -250,6 +252,8 @@ class TCPServer(object):
                             block = None
                             try:
                                 block = bc.get_block_by_height(i)
+                            except:
+                                continue
                             if block:
                                 break
                         bc_txs = block._transactions
@@ -466,6 +470,8 @@ class TCPClient(object):
                     block = None
                     try:
                         block = block_chain.get_block_by_height(i)
+                    except:
+                        continue
                     if block:
                         break
                 send_data = block.serialize()
@@ -524,6 +530,8 @@ class TCPClient(object):
                         block = None
                         try:
                             block = bc.get_block_by_height(i)
+                        except:
+                            continue
                         if block:
                             break
                     bc_txs = block._transactions
@@ -550,6 +558,8 @@ class TCPClient(object):
             block = None
             try:
                 block = block_chain.get_block_by_height(height)
+            except:
+                continue
             if block:
                 break
         data = block.serialize()
@@ -582,6 +592,8 @@ class TCPClient(object):
                             block = None
                             try:
                                 block = bc.get_block_by_height(i)
+                            except:
+                                continue
                             if block:
                                 break
                         bc_txs = block._transactions
