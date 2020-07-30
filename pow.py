@@ -9,7 +9,7 @@ class ProofOfWork(object):
     """
     pow
     """
-    _N_BITS = 25    # e1
+    _N_BITS = 24    # e1
     MAX_BITS = 256
     MAX_SIZE = sys.maxsize
     def __init__(self, block, n_bits=_N_BITS):
