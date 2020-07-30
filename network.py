@@ -531,6 +531,9 @@ class TCPClient(object):
                         log.info("------client handle_shake send block msg------")  # 7.10
                         send_msg = Msg(Msg.GET_BLOCK_MSG, i)
                         self.send(send_msg)
+                else:
+                    msg = Msg(Msg.NONE_MSG, "")
+                    self.send(msg)
             else:
                 lc.height = last_height
                 lc.ip = self.ip
