@@ -178,7 +178,7 @@ class TCPServer(object):
             return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
 
     def handle_handshake(self, msg, conn, addr):
-        log.info("------server handle_handshake------")  # 7.10
+        log.info("------server handle_handshake from " + "------")  # 7.10
         data = msg.get("data", "")
         last_height = data.get("last_height", 0)
         block_chain = BlockChain()
@@ -293,6 +293,7 @@ class TCPServer(object):
         data = msg.get("data", "")
         block = Block.deserialize(data)
         bc = BlockChain()
+        log.info("------s handle_synchronize from " + str(addr) + "------")
         try:
             ls_blo = bc.get_last_block()
             if ls_blo:
@@ -461,7 +462,7 @@ class TCPClient(object):
                 self.send(msg)
 
     def handle_shake(self, msg):
-        log.info("------client handle_shake------")  # 7.10
+        log.info("------client handle_shake from " + str(self.ip) + "------")  # 7.10
         data = msg.get("data", "")
         last_height = data.get("last_height", 0)
         block_chain = BlockChain()
@@ -479,6 +480,7 @@ class TCPClient(object):
                 send_data = block.serialize()
                 msg = Msg(Msg.SYNCHRONIZE_MSG, send_data)
                 self.send(msg)
+                log.info("------client handle_shake send synchronize msg to" + str(self.ip) + "------")
         elif local_last_height < last_height:
             start_height = 0 if local_last_height == -1 else local_last_height
             for i in range(start_height, last_height + 1):
