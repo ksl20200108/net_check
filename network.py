@@ -303,7 +303,7 @@ class TCPServer(object):
                     bc.add_block_from_peers(block)
                     log.info("------server handle_get_block add_block_from_peers------")
                 else:
-                    log.info("------error add------")
+                    log.info("------error add as last height " + str(block.block_header.height) + "------")
             else:
                 bc.add_block_from_peers(block)
                 log.info("------server handle_get_block add_block_from_peers------")
@@ -529,7 +529,7 @@ class TCPClient(object):
                     bc.add_block_from_peers(block)
                     log.info("------client handle_get_block add_block_from_peers------")  # 7.8
                 else:
-                    log.info("------error add------")
+                    log.info("------error add as last height " + str(block.block_header.height) + "------")
             else:
                 bc.add_block_from_peers(block)
                 log.info("------client handle_get_block add_block_from_peers------")
