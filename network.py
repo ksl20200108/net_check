@@ -201,34 +201,58 @@ class TCPServer(object):
         elif local_last_height < last_height:
             log.info("------server handle_handshake fall behind------")
             start_height = 0 if local_last_height == -1 else local_last_height
-            for i in range(start_height, last_height + 1):
-                log.info("------server handle_handshake synchronize for------")
-                send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
-                send_data = json.dumps(send_msg.__dict__)
-                send_bytes = send_data.encode()
-                header_json = json.dumps({"send_size": len(send_bytes)})
-                header_bytes = header_json.encode()
-                header_size = len(header_bytes)
-                conn.sendall(struct.pack('i', header_size))
-                conn.sendall(header_bytes)
-                conn.sendall(send_bytes)
-                log.info("------server synchronize already send------")
+            synchronize_range = [start_height, last_height+1]
+            send_msg = Msg(Msg.SYNCHRONIZE_MSG, synchronize_range)
+            send_data = json.dumps(send_msg.__dict__)
+            send_bytes = send_data.encode()
+            header_json = json.dumps({"send_size": len(send_bytes)})
+            header_bytes = header_json.encode()
+            header_size = len(header_bytes)
+            conn.sendall(struct.pack('i', header_size))
+            conn.sendall(header_bytes)
+            conn.sendall(send_bytes)
+            log.info("------server synchronize already send------")
+            # for i in range(start_height, last_height + 1):
+            #     log.info("------server handle_handshake synchronize for------")
+            #     send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
+            #     send_data = json.dumps(send_msg.__dict__)
+            #     send_bytes = send_data.encode()
+            #     header_json = json.dumps({"send_size": len(send_bytes)})
+            #     header_bytes = header_json.encode()
+            #     header_size = len(header_bytes)
+            #     conn.sendall(struct.pack('i', header_size))
+            #     conn.sendall(header_bytes)
+            #     conn.sendall(send_bytes)
+            #     log.info("------server synchronize already send------")
 
     def handle_get_block(self, msg, conn, addr):
         log.info("------server handle_get_block from " + str(addr) + "------")  # 7.8
-        height = msg.get("data", 1)
+        get_range = msg.get("data", 1)
         log.info("------with height " + str(height) + "------")
         block_chain = BlockChain()
-        while True:
-            block = None
-            try:
-                block = block_chain.get_block_by_height(height)
-            except:
-                continue
-            if block:
-                break
+        data = []
+        for height in range(get_range[0], get_range[1]):
+            already_get = False
+            for i in range(0, 2):
+                block = None
+                try:
+                    block = block_chain.get_block_by_height(height)
+                    already_get = True
+                    break
+                except:
+                    continue
+            if already_get:
+                block = block.serialize()
+                data.append(block)
+            elif data:
+                msg = Msg(Msg.GET_BLOCK_MSG, data)
+                log.info("------server send get_block msg------")  # 7.10
+                return msg
+            else:
+                msg = Msg(Msg.NONE_MSG, "")
+                return msg
         log.info("------server handle_get_block: get_block_by_height------")  # 7.8
-        data = block.serialize()
+        # data = block.serialize()
         msg = Msg(Msg.GET_BLOCK_MSG, data)
         log.info("------server send get_block msg------")  # 7.10
         return msg
@@ -280,23 +304,27 @@ class TCPServer(object):
         return msg
 
     def handle_synchronize(self, msg, conn, addr):  # 7.10
-        data = msg.get("data", "")
+        datas = msg.get("data", "")
         log.info("------s handle_synchronize from " + str(addr) + "------")
         log.info("------with data " + str(data) + "------")
-        block = Block.deserialize(data)
+        # block = Block.deserialize(data)
         bc = BlockChain()
         try:
             ls_blo = bc.get_last_block()
             if ls_blo:
                 log.info("s handle_synchronize with local last height and last height " + str(ls_blo.block_header.height) + " " + str(block.block_header.height))
-                if block.block_header.height > ls_blo.block_header.height: 
+                for data in datas:
+                    block = Block.deserialize(data)
+                    if block.block_header.height > ls_blo.block_header.height: 
+                        bc.add_block_from_peers(block)
+                        log.info("------server handle_get_block add_block_from_peers------")
+                    else:
+                        log.info("------error add as last height " + str(block.block_header.height) + "------")
+            else:
+                for data in datas:
+                    block = Block.deserialize(data)
                     bc.add_block_from_peers(block)
                     log.info("------server handle_get_block add_block_from_peers------")
-                else:
-                    log.info("------error add as last height " + str(block.block_header.height) + "------")
-            else:
-                bc.add_block_from_peers(block)
-                log.info("------server handle_get_block add_block_from_peers------")
             send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
             send_bytes = send_data.encode()
             header_json = json.dumps({"send_size": len(send_bytes)})
@@ -465,50 +493,69 @@ class TCPClient(object):
         if local_last_height > last_height:  # pass
             log.info("------error shake------")
             log.info("client local_last_height %d, last_height %d" % (local_last_height, last_height))
+            send_data = []
             for i in range(last_height+1, local_last_height+1):
-                while True:
+                already_get = False
+                for i in range(0, 2):
                     block = None
                     try:
                         block = block_chain.get_block_by_height(i)
+                        already_get = True
+                        break
                     except:
                         continue
-                    if block:
-                        break
-                send_data = block.serialize()
+                if already_get:
+                    send_data.append(block.serialize())
+                elif send_data:
+                    msg = Msg(Msg.SYNCHRONIZE_MSG, send_data)
+                    self.send(msg)
+                    return
+                else:
+                    msg = Msg(Msg.NONE_MSG, "")
+                    self.send(msg)
+                    return
+                # send_data = block.serialize()
                 msg = Msg(Msg.SYNCHRONIZE_MSG, send_data)
                 self.send(msg)
                 log.info("------client handle_shake send synchronize msg to" + str(self.ip) + "------")
         elif local_last_height < last_height:
             start_height = 0 if local_last_height == -1 else local_last_height
-            for i in range(start_height, last_height + 1):
-                log.info("------client handle_shake send block msg------")  # 7.10
-                send_msg = Msg(Msg.GET_BLOCK_MSG, i)
-                self.send(send_msg)
+            # for i in range(start_height, last_height + 1):
+            #     log.info("------client handle_shake send block msg------")  # 7.10
+            #     send_msg = Msg(Msg.GET_BLOCK_MSG, i)
+            #     self.send(send_msg)
+            get_range = [start_height, local_last_height+1]
+            send_msg = Msg(Msg.GET_BLOCK_MSG, get_range)
+            self.send(send_msg)
         else:
             send_msg = Msg(Msg.NONE_MSG, "")
             self.send(send_msg)
 
     def handle_get_block(self, msg):
-        data = msg.get("data", "")
+        datas = msg.get("data", "")
         log.info("------client handle_get_block from " + str(self.ip) + "------")  # 7.8
         log.info("------with data " + str(data) + "------")
         # log.info("------deserialize these data: " + msg + "------")    # 7.10
         # log.info("------data type" + type(msg) + "------")  # 7.10
-        block = Block.deserialize(data)
+        # block = Block.deserialize(data)
         bc = BlockChain()
         log.info("------client deserialize block from peer------")
         try:
             ls_blo = bc.get_last_block()
             if ls_blo:
-                log.info("c handle_get_block local last height and last height " + str(ls_blo.block_header.height) + " " + str(block.block_header.height))
-                if block.block_header.height > ls_blo.block_header.height:
-                    bc.add_block_from_peers(block)
-                    log.info("------client handle_get_block add_block_from_peers------")  # 7.8
-                else:
-                    log.info("------error add as last height " + str(block.block_header.height) + "------")
+                for data in datas:
+                    block = Block.deserialize(data)
+                    log.info("c handle_get_block local last height and last height " + str(ls_blo.block_header.height) + " " + str(block.block_header.height))
+                    if block.block_header.height > ls_blo.block_header.height:
+                        bc.add_block_from_peers(block)
+                        log.info("------client handle_get_block add_block_from_peers------")  # 7.8
+                    else:
+                        log.info("------error add as last height " + str(block.block_header.height) + "------")
             else:
-                bc.add_block_from_peers(block)
-                log.info("------client handle_get_block add_block_from_peers------")
+                for data in datas:
+                    block = Block.deserialize(data)
+                    bc.add_block_from_peers(block)
+                    log.info("------client handle_get_block add_block_from_peers------")
         except ValueError as e:
             log.info("------client handle_get_block failed to add_block_from_peers------")  # 7.8
             log.info(str(e))
