@@ -335,11 +335,8 @@ class TCPServer(object):
             else:
                 for data in datas:
                     block = Block.deserialize(data)
-                    try:
-                        bc.add_block_from_peers(block)
-                        log.info("------server handle_get_block add_block_from_peers------")
-                    except:
-                        pass
+                    bc.add_block_from_peers(block)
+                    log.info("------server handle_get_block add_block_from_peers------")
             msg = Msg(Msg.NONE_MSG, "")
             return msg
             # send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
