@@ -155,7 +155,7 @@ class TCPServer(object):
         if res_msg:
             return json.dumps(res_msg.__dict__)
         else:
-            return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
+            return None # json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
 
     def handle_handshake(self, msg, conn, addr):
         log.info("------server handle_handshake from " + str(addr) + "------")  # 7.10
