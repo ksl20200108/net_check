@@ -134,8 +134,8 @@ class TCPServer(object):
         log.info("code:" + str(code))
         if code == Msg.HAND_SHAKE_MSG:
             log.info("------server receive HAND_SHAKE_MSG------")
-            self.handle_handshake(msg, conn, addr)  # 7.10
-            res_msg = None  # 7.10
+            res_msg = self.handle_handshake(msg, conn, addr)  # 7.10
+            # res_msg = None  # 7.10
         elif code == Msg.GET_BLOCK_MSG:
             log.info("------server receive GET_BLOCK_MSG------")
             res_msg = self.handle_get_block(msg, conn, addr)
@@ -144,8 +144,8 @@ class TCPServer(object):
             res_msg = self.handle_transaction(msg, conn, addr)  # 7.20
         elif code == Msg.SYNCHRONIZE_MSG:  # 7.10
             log.info("------server receive SYNCHRONIZE_MSG------")
-            self.handle_synchronize(msg, conn, addr)
-            res_msg = None
+            res_msg = self.handle_synchronize(msg, conn, addr)
+            # res_msg = None
         elif code == Msg.MISS_TRANSACTION_MSG:  # 7.21
             log.info("------server receive MISS_TRANSACTION_MSG------")
             res_msg = self.handle_miss(msg, conn, addr)
@@ -155,7 +155,7 @@ class TCPServer(object):
         if res_msg:
             return json.dumps(res_msg.__dict__)
         else:
-            return None # json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
+            return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
 
     def handle_handshake(self, msg, conn, addr):
         log.info("------server handle_handshake from " + str(addr) + "------")  # 7.10
@@ -197,7 +197,7 @@ class TCPServer(object):
             # conn.sendall(struct.pack('i', header_size))
             # conn.sendall(header_bytes)
             # conn.sendall(send_bytes)
-            log.info("------server handle_handshake precede send msg: " + str(data) + "------")
+            # log.info("------server handle_handshake precede send msg: " + str(data) + "------")
 
         elif local_last_height < last_height:
             log.info("------server handle_handshake fall behind------")
@@ -341,9 +341,9 @@ class TCPServer(object):
             # conn.sendall(send_bytes)
         except ValueError as e:
             log.info("------server handle_get_block failed get last block------")
+            log.info(str(e))
             msg = Msg(Msg.NONE_MSG, "")
             return msg
-            log.info(str(e))
 
     def handle_miss(self, msg, conn, addr):  # 7.21
         log.info("------server handle miss------")
