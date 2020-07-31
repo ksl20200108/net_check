@@ -81,7 +81,7 @@ class TCPServer(object):
     def handle_loop(self, conn, addr):
         while True:
             log.info("------s handle loop------")  # 7.11
-            header_size = struct.unpack('i', conn.recv(4))[0]
+            header_size = struct.unpack('ii', conn.recv(8))[0]
             header_bytes = conn.recv(header_size)
             header = eval(header_bytes.decode())
             send_size = header["send_size"]
@@ -107,7 +107,7 @@ class TCPServer(object):
                 header_json = json.dumps({"send_size": len(send_bytes)})
                 header_bytes = header_json.encode()
                 header_size = len(header_bytes)
-                conn.sendall(struct.pack('i', header_size))
+                conn.sendall(struct.pack('ii', header_size))
                 conn.sendall(header_bytes)
                 conn.sendall(send_bytes)  # 7.10
             except ValueError as e:
@@ -388,11 +388,11 @@ class TCPClient(object):
         header_bytes = header_json.encode()
         header_size = len(header_bytes)
         time.sleep(1)
-        self.sock.sendall(struct.pack('i', header_size))
+        self.sock.sendall(struct.pack('ii', header_size))
         self.sock.sendall(header_bytes)
         self.sock.sendall(send_bytes)
         log.info("client send to:" + self.ip + "------with these data" + data)
-        header_size = struct.unpack('i', self.sock.recv(4))[0]
+        header_size = struct.unpack('ii', self.sock.recv(8))[0]
         header_bytes = self.sock.recv(header_size)
         header = eval(header_bytes.decode())
         send_size = header["send_size"]
