@@ -180,6 +180,12 @@ class TCPServer(object):
         log.info("server local_last_height %d, last_height %d" % (local_last_height, last_height))
 
         if local_last_height >= last_height:
+            try:
+                st = StopMine()
+                if st.h < local_last_height:
+                    st.h = local_last_height
+            except:
+                pass
             log.info("------server handle_handshake precede------")
             try:
                 genesis_block = block_chain[0]
@@ -208,6 +214,12 @@ class TCPServer(object):
             # log.info("------server handle_handshake precede send msg: " + str(data) + "------")
 
         elif local_last_height < last_height:
+            try:
+                st = StopMine()
+                if st.h < last_height:
+                    st.h = last_height
+            except:
+                pass
             log.info("------server handle_handshake fall behind------")
             start_height = 0 if local_last_height == -1 else local_last_height
             synchronize_range = [start_height, last_height+1]
@@ -514,6 +526,12 @@ class TCPClient(object):
             local_last_height = -1
         log.info("client local_last_height %d, last_height %d" % (local_last_height, last_height))
         if local_last_height > last_height:  # pass
+            try:
+                st = StopMine()
+                if st.h < local_last_height:
+                    st.h = local_last_height
+            except:
+                pass
             log.info("------error shake------")
             log.info("client local_last_height %d, last_height %d" % (local_last_height, last_height))
             send_data = []
@@ -543,6 +561,12 @@ class TCPClient(object):
                 self.send(msg)
                 log.info("------client handle_shake send synchronize msg to" + str(self.ip) + "------")
         elif local_last_height < last_height:
+            try:
+                st = StopMine()
+                if st.h < last_height:
+                    st.h = last_height
+            except:
+                pass
             start_height = 0 if local_last_height == -1 else local_last_height
             # for i in range(start_height, last_height + 1):
             #     log.info("------client handle_shake send block msg------")  # 7.10
@@ -762,6 +786,14 @@ class PeerServer(Singleton):
     def run(self, p2p_server):
         t = threading.Thread(target=self.nodes_find, args=(p2p_server,))
         t.start()
+
+
+class StopMine(Singleton):
+    def __init__(self):
+        if not hasattr(self, "h"):
+            self.h = 0
+        if not hasattr(self, "mine_h"):
+            self.mine_h = 1
 
 
 if __name__ == "__main__":

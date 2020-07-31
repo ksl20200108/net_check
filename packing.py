@@ -21,6 +21,7 @@ from txpool import *
 from block_chain import *
 from sorting import *
 from transactions import *
+from network import StopMine
 
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -84,11 +85,19 @@ def packing():
     return selected_txs, total_fee  # change 6.20
 
 def finding_new_block():
-    for i in range(0, 11):
+    for i in range(1, 12):
+        try:
+            st = StopMine()
+            st.mine_h = i
+        except:
+            pass
         bc1 = BlockChain()
         tx3, total_fee = packing()
         log.info("------return these information:" + str(tx3) + str(total_fee) + "------")
-        bc1.add_block(tx3, total_fee)    # wait try when there's no transaction
+        try:
+            bc1.add_block(tx3, total_fee)    # wait try when there's no transaction
+        except:
+            pass
 
 # def start_find():
 #     t1 = threading.Thread(target=finding_new_block,args=()) # change
