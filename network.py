@@ -335,8 +335,11 @@ class TCPServer(object):
             else:
                 for data in datas:
                     block = Block.deserialize(data)
-                    bc.add_block_from_peers(block)
-                    log.info("------server handle_get_block add_block_from_peers------")
+                    try:
+                        bc.add_block_from_peers(block)
+                        log.info("------server handle_get_block add_block_from_peers------")
+                    except:
+                        pass
             msg = Msg(Msg.NONE_MSG, "")
             return msg
             # send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
@@ -580,9 +583,13 @@ class TCPClient(object):
                     block = Block.deserialize(data)
                     bc.add_block_from_peers(block)
                     log.info("------client handle_get_block add_block_from_peers------")
+            msg = Msg(Msg.NONE_MSG, "")
+            self.send(msg)
         except ValueError as e:
             log.info("------client handle_get_block failed to add_block_from_peers------")  # 7.8
             log.info(str(e))
+            msg = Msg(Msg.NONE_MSG, "")
+            self.send(msg)
 
     def handle_transaction(self, msg):
         log.info("------client handle_transaction------")  # 7.8
