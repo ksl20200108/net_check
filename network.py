@@ -85,7 +85,13 @@ class TCPServer(object):
             header_bytes = conn.recv(header_size)
             header = eval(header_bytes.decode())
             send_size = header["send_size"]
-            recv_data = conn.recv(send_size)    # 7.21
+            recv_size = 0
+            recv_data = b''
+            while recv_size < send_size:
+                res = conn.recv(1024)
+                recv_data += res
+                recv_size += len(res)
+            # recv_data = conn.recv(send_size)    # 7.21
             log.info("------server handle_loop recv_data:" + str(recv_data)[1:] + "------")   # 7.8
             if not recv_data:  # 7.7
                 log.info("------server handle_loop connection broke------")
@@ -396,7 +402,13 @@ class TCPClient(object):
         header_bytes = self.sock.recv(header_size)
         header = eval(header_bytes.decode())
         send_size = header["send_size"]
-        recv_data = self.sock.recv(send_size)    # 7.21
+        recv_size = 0
+        recv_data = b''
+        while recv_size < send_size:
+            res = self.sock.recv(1024)
+            recv_data += res
+            recv_size += len(res)
+        # recv_data = self.sock.recv(send_size)    # 7.21
         log.info("client_recv_data from:" + self.ip + "------with these data" + str(recv_data))
         try:
             log.info("------client try loads and handle data------")
