@@ -161,7 +161,7 @@ class TCPServer(object):
             return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)    # '{"code": 0, "data":""}'    # 7.23
 
         if res_msg:
-            return json.dumps(res_msg.__dict__)
+            return res_msg  # return json.dumps(res_msg.__dict__)
         else:
             return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
 
@@ -195,7 +195,7 @@ class TCPServer(object):
                     "genesis_block": genesis_block.serialize()
                 }
             msg = Msg(Msg.HAND_SHAKE_MSG, data)
-            return msg
+            json.dumps(res_msg.__dict__)    # return msg
             # send_data = json.dumps(msg.__dict__)
             # time.sleep(1)  # 7.13
             # send_bytes = send_data.encode()
@@ -212,7 +212,7 @@ class TCPServer(object):
             start_height = 0 if local_last_height == -1 else local_last_height
             synchronize_range = [start_height, last_height+1]
             send_msg = Msg(Msg.SYNCHRONIZE_MSG, synchronize_range)
-            return msg
+            json.dumps(res_msg.__dict__)    # return msg
             # send_data = json.dumps(send_msg.__dict__)
             # send_bytes = send_data.encode()
             # header_json = json.dumps({"send_size": len(send_bytes)})
@@ -259,15 +259,15 @@ class TCPServer(object):
             elif data:
                 msg = Msg(Msg.GET_BLOCK_MSG, data)
                 log.info("------server send get_block msg------")  # 7.10
-                return msg
+                json.dumps(res_msg.__dict__)    # return msg
             else:
                 msg = Msg(Msg.NONE_MSG, "")
-                return msg
+                json.dumps(res_msg.__dict__)    # return msg
         log.info("------server handle_get_block: get_block_by_height------")  # 7.8
         # data = block.serialize()
         msg = Msg(Msg.GET_BLOCK_MSG, data)
         log.info("------server send get_block msg------")  # 7.10
-        return msg
+        json.dumps(res_msg.__dict__)    # return msg
 
     def handle_transaction(self, msg, conn, addr):  # 7.20
         log.info("------server handle_transaction------")  # 7.8
@@ -313,7 +313,7 @@ class TCPServer(object):
                     server1.broadcast_tx(tx)
                     log.info("------server handle_transaction broadcast------")
         msg = Msg(Msg.NONE_MSG, "")
-        return msg
+        json.dumps(res_msg.__dict__)    # return msg
 
     def handle_synchronize(self, msg, conn, addr):  # 7.10
         datas = msg.get("data", "")
@@ -338,7 +338,7 @@ class TCPServer(object):
                     bc.add_block_from_peers(block)
                     log.info("------server handle_get_block add_block_from_peers------")
             msg = Msg(Msg.NONE_MSG, "")
-            return msg
+            json.dumps(res_msg.__dict__)    # return msg
             # send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
             # send_bytes = send_data.encode()
             # header_json = json.dumps({"send_size": len(send_bytes)})
@@ -351,7 +351,7 @@ class TCPServer(object):
             log.info("------server handle_get_block failed get last block------")
             log.info(str(e))
             msg = Msg(Msg.NONE_MSG, "")
-            return msg
+            json.dumps(res_msg.__dict__)    # return msg
 
     def handle_miss(self, msg, conn, addr):  # 7.21
         log.info("------server handle miss------")
@@ -361,16 +361,16 @@ class TCPServer(object):
         if len(tx_pool1.pre_txs) < int(data):
             log.info("------shorter------")
             msg = Msg(Msg.GET_TRANSACTION_MSG, "")
-            return msg
+            json.dumps(res_msg.__dict__)    # return msg
         elif len(tx_pool1.pre_txs) > int(data):
             log.info("------longer------")
             data = [tx.serialize() for tx in tx_pool1.txs]
             msg = Msg(Msg.MISS_TRANSACTION_MSG, data)
-            return msg
+            json.dumps(res_msg.__dict__)    # return msg
         else:
             log.info("------the same------")
             msg = Msg(Msg.NONE_MSG, "")
-            return msg
+            json.dumps(res_msg.__dict__)    # return msg
 
 
 class TCPClient(object):
