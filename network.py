@@ -155,7 +155,7 @@ class TCPServer(object):
         if res_msg:
             return json.dumps(res_msg.__dict__)
         else:
-            return json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
+            return None # json.dumps(Msg(Msg.NONE_MSG, "").__dict__)   # 7.23
 
     def handle_handshake(self, msg, conn, addr):
         log.info("------server handle_handshake from " + str(addr) + "------")  # 7.10
@@ -187,15 +187,16 @@ class TCPServer(object):
                     "genesis_block": genesis_block.serialize()
                 }
             msg = Msg(Msg.HAND_SHAKE_MSG, data)
-            send_data = json.dumps(msg.__dict__)
-            time.sleep(1)  # 7.13
-            send_bytes = send_data.encode()
-            header_json = json.dumps({"send_size": len(send_bytes)})
-            header_bytes = header_json.encode()
-            header_size = len(header_bytes)
-            conn.sendall(struct.pack('i', header_size))
-            conn.sendall(header_bytes)
-            conn.sendall(send_bytes)
+            return msg
+            # send_data = json.dumps(msg.__dict__)
+            # time.sleep(1)  # 7.13
+            # send_bytes = send_data.encode()
+            # header_json = json.dumps({"send_size": len(send_bytes)})
+            # header_bytes = header_json.encode()
+            # header_size = len(header_bytes)
+            # conn.sendall(struct.pack('i', header_size))
+            # conn.sendall(header_bytes)
+            # conn.sendall(send_bytes)
             log.info("------server handle_handshake precede send msg: " + str(data) + "------")
 
         elif local_last_height < last_height:
@@ -203,15 +204,17 @@ class TCPServer(object):
             start_height = 0 if local_last_height == -1 else local_last_height
             synchronize_range = [start_height, last_height+1]
             send_msg = Msg(Msg.SYNCHRONIZE_MSG, synchronize_range)
-            send_data = json.dumps(send_msg.__dict__)
-            send_bytes = send_data.encode()
-            header_json = json.dumps({"send_size": len(send_bytes)})
-            header_bytes = header_json.encode()
-            header_size = len(header_bytes)
-            conn.sendall(struct.pack('i', header_size))
-            conn.sendall(header_bytes)
-            conn.sendall(send_bytes)
-            log.info("------server synchronize already send------")
+            return msg
+            # send_data = json.dumps(send_msg.__dict__)
+            # send_bytes = send_data.encode()
+            # header_json = json.dumps({"send_size": len(send_bytes)})
+            # header_bytes = header_json.encode()
+            # header_size = len(header_bytes)
+            # conn.sendall(struct.pack('i', header_size))
+            # conn.sendall(header_bytes)
+            # conn.sendall(send_bytes)
+            # log.info("------server synchronize already send------")
+
             # for i in range(start_height, last_height + 1):
             #     log.info("------server handle_handshake synchronize for------")
             #     send_msg = Msg(Msg.SYNCHRONIZE_MSG, i)
@@ -326,16 +329,20 @@ class TCPServer(object):
                     block = Block.deserialize(data)
                     bc.add_block_from_peers(block)
                     log.info("------server handle_get_block add_block_from_peers------")
-            send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
-            send_bytes = send_data.encode()
-            header_json = json.dumps({"send_size": len(send_bytes)})
-            header_bytes = header_json.encode()
-            header_size = len(header_bytes)
-            conn.sendall(struct.pack('i', header_size))
-            conn.sendall(header_bytes)
-            conn.sendall(send_bytes)
+            msg = Msg(Msg.NONE_MSG, "")
+            return msg
+            # send_data = json.dumps(Msg(Msg.NONE_MSG, "").__dict__) # '{"code": 0, "data":""}'    # pass
+            # send_bytes = send_data.encode()
+            # header_json = json.dumps({"send_size": len(send_bytes)})
+            # header_bytes = header_json.encode()
+            # header_size = len(header_bytes)
+            # conn.sendall(struct.pack('i', header_size))
+            # conn.sendall(header_bytes)
+            # conn.sendall(send_bytes)
         except ValueError as e:
-            log.info("------server handle_get_block failed to add_block_from_peers------")
+            log.info("------server handle_get_block failed get last block------")
+            msg = Msg(Msg.NONE_MSG, "")
+            return msg
             log.info(str(e))
 
     def handle_miss(self, msg, conn, addr):  # 7.21
