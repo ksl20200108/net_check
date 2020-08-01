@@ -224,7 +224,7 @@ class TCPServer(object):
             log.info("------server handle_handshake fall behind------")
             start_height = 0 if local_last_height == -1 else local_last_height
             synchronize_range = [start_height+1, last_height+1]
-            log.info("------server need synchronize range " + str(synchronize_range[0]) + " " + str(synchronize_range[1] + "------"))
+            log.info("------server need synchronize range " + str(synchronize_range[0]) + " " + str(synchronize_range[1]) + "------"))
             send_msg = Msg(Msg.SYNCHRONIZE_MSG, synchronize_range)
             return send_msg
             # send_data = json.dumps(send_msg.__dict__)
