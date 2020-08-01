@@ -223,7 +223,8 @@ class TCPServer(object):
                 pass
             log.info("------server handle_handshake fall behind------")
             start_height = 0 if local_last_height == -1 else local_last_height
-            synchronize_range = [start_height, last_height+1]
+            synchronize_range = [start_height+1, last_height+1]
+            log.info("------server need synchronize range " + str(synchronize_range[0]) + " " + str(synchronize_range[1] + "------"))
             send_msg = Msg(Msg.SYNCHRONIZE_MSG, synchronize_range)
             return send_msg
             # send_data = json.dumps(send_msg.__dict__)
@@ -279,7 +280,7 @@ class TCPServer(object):
         log.info("------server handle_get_block: get_block_by_height------")  # 7.8
         # data = block.serialize()
         msg = Msg(Msg.GET_BLOCK_MSG, data)
-        log.info("------server send get_block msg------")  # 7.10
+        log.info("------server send get_block msg" + str(data) + "------")  # 7.10
         return msg
 
     def handle_transaction(self, msg, conn, addr):  # 7.20
@@ -573,7 +574,7 @@ class TCPClient(object):
             #     log.info("------client handle_shake send block msg------")  # 7.10
             #     send_msg = Msg(Msg.GET_BLOCK_MSG, i)
             #     self.send(send_msg)
-            get_range = [start_height, local_last_height+1]
+            get_range = [start_height+1, local_last_height+1]
             send_msg = Msg(Msg.GET_BLOCK_MSG, get_range)
             self.send(send_msg)
         else:

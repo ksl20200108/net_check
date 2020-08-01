@@ -98,8 +98,10 @@ def finding_new_block():
         try:
             bc1.add_block(tx3, total_fee)    # wait try when there's no transaction
         except:
+            log.info("------fall behind in mine------")
             try:
                 st = StopMine()
+                log.info("------with longest " + str(st.h) + " and local " + str(i) + "------")
                 while i < st.h:
                     tx3, total_fee = packing()
                     i += 1
