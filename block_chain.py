@@ -1,5 +1,6 @@
 # coding:utf-8
 import time
+import socket, struct, fcntl
 from block import Block
 from block_header import BlockHeader
 from db import DB
@@ -26,13 +27,16 @@ class BlockChain(object):
             utxo.update(genesis_block)
 
     def get_last_block(self):
-        last_block_hash_doc = self.db.get('l')
-        if not last_block_hash_doc:
+        try:
+            last_block_hash_doc = self.db.get('l')
+            if not last_block_hash_doc:
+                return None
+            last_block_hash = last_block_hash_doc.get('hash', '')
+            block_data = self.db.get(last_block_hash)
+            block = Block.deserialize(block_data)
+            return block
+        except:
             return None
-        last_block_hash = last_block_hash_doc.get('hash', '')
-        block_data = self.db.get(last_block_hash)
-        block = Block.deserialize(block_data)
-        return block
 
     def set_last_hash(self, hash):
         last_hash = {"hash": str(hash)}
@@ -129,8 +133,11 @@ class BlockChain(object):
         height = -1
         if last_block:
             height = last_block.block_header.height
-        if index <= height:
-            return self.get_block_by_height(index)
+        if index == height:
+            return last_block
+        elif index < height and index >= 0:
+            block = self.get_block_by_height(index)
+            return block
         else:
             raise IndexError('Index is out of range')
 
@@ -188,6 +195,11 @@ class BlockChain(object):
     def new_transaction(self, from_addr, to_addr, amount, fee):
         inputs = []
         outputs = []
+        ifname='ens33'  # enp2s0
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        ip = socket.inet_ntoa(
+            fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
+
 
         wallets = Wallets()
         from_wallet = wallets[from_addr]
@@ -208,7 +220,7 @@ class BlockChain(object):
             # a change
             outputs.append(TXOutput(acc - amount - fee, from_addr))   # change
 
-        tx = Transaction(inputs, outputs, fee)  # change
+        tx = Transaction(inputs, outputs, fee, ip)  # change
         tx.set_id()
         self.sign_transaction(tx, from_wallet.private_key)
         return tx

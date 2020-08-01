@@ -4,6 +4,8 @@
 
 2. Remember to change conf.py
 
+3. start the one has bootstrap host first.
+
 # Sketches:
 
 1. Include a transaction in block if its fee is higher than 0.1.
@@ -21,7 +23,14 @@
 
 # Changes:
 
-experiment1: packing
+experiment1: network, txpool, block_chain, block
 
+# Tips
 
-python3 cli.py send --from 1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W --to 1CjsJ3JguwfGRAW1CKgVYor4UgcSG2XF9n --amount 1 --fee 
+You should know that there are some differences between machines and computers as well as network environment. I have SPENT A LOT OF WEEKS dealing with the problems caused by these differences. It is really frustrated and I find sometimes a tiny difference may make some part in the code fail. However, the CODE DO WORK IN SOME ENVIRONMENT AND MACHINES. So if the code does not work on your computer, you should try to find the problem yourself. May be the network on your machine have some problem. Try the "ping" and use "telnet" to check that whether the the port 5678 and 5984 can be visited. And somehow change the code yourself to make it adapt to your environment when it is necessary.
+
+Also, it is suggested that you should consider to use a machine with stable performence.
+
+# 笔记
+
+正常版本，除了挖矿后的区块同步有问题

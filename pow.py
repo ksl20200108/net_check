@@ -4,12 +4,13 @@ import sys
 import utils
 from errors import NonceNotFoundError
 import pdb  # 7.11
+from stopmine import StopMine
 
 class ProofOfWork(object):
     """
     pow
     """
-    _N_BITS = 24    # e1
+    _N_BITS = 23    # e1
     MAX_BITS = 256
     MAX_SIZE = sys.maxsize
     def __init__(self, block, n_bits=_N_BITS):
@@ -31,6 +32,12 @@ class ProofOfWork(object):
         hash_hex = None
         # print('Mining a new block')   # change delete
         while nonce < self.MAX_SIZE:
+            try:
+                st = StopMine()
+                if st.h >= st.mine_h:
+                    raise NonceNotFoundError
+            except:
+                pass
             data = self._prepare_data(nonce)
             hash_hex = utils.sum256_hex(data)
 

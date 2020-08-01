@@ -26,14 +26,23 @@ for i in range(1, len(distribution)):    # calculate cdf
     distribution[i] = [distribution[i][0], distribution[i][1]+distribution[i-1][1]]
     # print(distribution[i-1])
 
-index1 = 0
-random_number = random.uniform(0, distribution[len(distribution)-1][1])
-for i in distribution:
-    if random_number >= i[1]:
-        index1 = distribution.index(i)
-        break
+def results():
+    index1 = 0
+    random_number = random.uniform(0, distribution[len(distribution)-1][1])
+    for i in distribution:
+        if random_number <= i[1]:
+            index1 = distribution.index(i)
+            break
+    result1 = random.uniform(distribution[index1-1][0], distribution[index1][0])
+    print("python3 cli.py send --from 1EiVGWYsWiM7shgR5i9KTE2kUjzqcyQU9W --to 1CjsJ3JguwfGRAW1CKgVYor4UgcSG2XF9n --amount 1 --fee %f " % result1)
+    print("")
 
-result1 = random.uniform(distribution[index1-1][0], distribution[index1][0])
-print("the result is :", result1)
+for i in range(1, 51):
+    print("expeirment %d --------------------" % i)
+    print("")
+    for j in range(1, 12):
+        client_send = random.uniform(0, 1)
+        if client_send <= 0.95:
+            results()
 
 # print(line[:17], "|| ", line[18:])
