@@ -85,7 +85,8 @@ def packing():
     return selected_txs, total_fee  # change 6.20
 
 def finding_new_block():
-    for i in range(1, 12):
+    i = 1
+    while i < 12:
         try:
             st = StopMine()
             st.mine_h = i
@@ -97,7 +98,14 @@ def finding_new_block():
         try:
             bc1.add_block(tx3, total_fee)    # wait try when there's no transaction
         except:
-            pass
+            try:
+                st = StopMine()
+                while i < st.h:
+                    tx3, total_fee = packing()
+                    i += 1
+            except:
+                pass
+        i += 1
 
 # def start_find():
 #     t1 = threading.Thread(target=finding_new_block,args=()) # change
