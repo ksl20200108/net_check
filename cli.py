@@ -252,7 +252,7 @@ def main():
                 print(blo.serialize())
                 print("")
             else:
-                return
+                break
             print(j)
             print("m_payoff ", m_payoff)
             print("u_payoff ", u_payoff)
