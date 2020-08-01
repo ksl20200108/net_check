@@ -4,7 +4,7 @@ import sys
 import utils
 from errors import NonceNotFoundError
 import pdb  # 7.11
-from network import StopMine
+from stopmine import StopMine
 
 class ProofOfWork(object):
     """

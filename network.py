@@ -17,6 +17,7 @@ from transactions import Transaction
 from utils import Singleton
 from conf import bootstrap_host, bootstrap_port, listen_port
 from signal import signal, SIGPIPE, SIG_DFL  # 7.23
+from stopmine import StopMine
 
 handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -786,14 +787,6 @@ class PeerServer(Singleton):
     def run(self, p2p_server):
         t = threading.Thread(target=self.nodes_find, args=(p2p_server,))
         t.start()
-
-
-class StopMine(Singleton):
-    def __init__(self):
-        if not hasattr(self, "h"):
-            self.h = 0
-        if not hasattr(self, "mine_h"):
-            self.mine_h = 1
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ from txpool import *
 from block_chain import *
 from sorting import *
 from transactions import *
-from network import StopMine
+from stopmine import StopMine
 
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
