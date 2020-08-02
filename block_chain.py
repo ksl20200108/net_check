@@ -1,6 +1,8 @@
 # coding:utf-8
 import time
-import socket, struct, fcntl
+import socket
+import struct
+import fcntl
 from block import Block
 from block_header import BlockHeader
 from db import DB
@@ -11,6 +13,7 @@ from wallets import Wallets
 from utxo import UTXOSet
 from conf import db_url
 
+
 class BlockChain(object):
     def __init__(self, db_url=db_url):
         self.db = DB(db_url)
@@ -20,7 +23,8 @@ class BlockChain(object):
             transactions = [transaction]
             genesis_block = Block.new_genesis_block(transactions)
             genesis_block.set_header_hash()
-            self.db.create(genesis_block.block_header.hash, genesis_block.serialize())
+            self.db.create(genesis_block.block_header.hash,
+                           genesis_block.serialize())
             self.set_last_hash(genesis_block.block_header.hash)
 
             utxo = UTXOSet()
@@ -84,7 +88,7 @@ class BlockChain(object):
         height = last_block.block_header.height + 1
         block_header = BlockHeader('', height, prev_hash)
 
-         # reward to wallets[0]
+        # reward to wallets[0]
         wallets = Wallets()
         keys = list(wallets.wallets.keys())
         w = wallets[keys[0]]
@@ -93,7 +97,8 @@ class BlockChain(object):
 
         utxo_set = UTXOSet()
         # txs = transactions  # change 6.21
-        txs = utxo_set.clear_transactions(transactions) # change clear transactions(add sort)
+        # change clear transactions(add sort)
+        txs = utxo_set.clear_transactions(transactions)
 
         block = Block(block_header, txs)
         block.mine(self)
@@ -153,7 +158,8 @@ class BlockChain(object):
         Find spendable outputs
         """
         uxto_set = UTXOSet()
-        accumulated, spentable_outs = uxto_set.find_spendable_outputs(address, amount)
+        accumulated, spentable_outs = uxto_set.find_spendable_outputs(
+            address, amount)
         return accumulated, spentable_outs
 
     def find_UTXO(self):
@@ -195,11 +201,10 @@ class BlockChain(object):
     def new_transaction(self, from_addr, to_addr, amount, fee):
         inputs = []
         outputs = []
-        ifname='ens33'  # enp2s0
+        ifname = 'eth0'  # enp2s0   # ens33
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         ip = socket.inet_ntoa(
             fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
-
 
         wallets = Wallets()
         from_wallet = wallets[from_addr]
@@ -207,7 +212,7 @@ class BlockChain(object):
 
         acc, valid_outpus = self._find_spendable_outputs(from_addr, amount)
         # if acc < amount + fee:  # change
-            # raise NotEnoughAmountError(u'not enough coin')
+        # raise NotEnoughAmountError(u'not enough coin')
         for fout in valid_outpus:
             index = fout.index
             txid = fout.txid
@@ -225,7 +230,7 @@ class BlockChain(object):
         self.sign_transaction(tx, from_wallet.private_key)
         return tx
 
-    def coin_base_tx(self, to_addr, fee=0): # change add "fee" 6.19
+    def coin_base_tx(self, to_addr, fee=0):  # change add "fee" 6.19
         data = str(time.time())
         tx = Transaction.coinbase_tx(to_addr, data, fee)    # change
         return tx

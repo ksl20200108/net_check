@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  net_check1:
+    image: net_check:1.0
+    container_name: k1
+    ports:
+      - 5678:5678
+    volumes:                       
+      - ./conf.py:/run/conf.py
+    networks: 
+      default: 
+        ipv4_address: 192.168.118.131
+  
+  net_check2:
+    image: net_check:1.0
+    container_name: k2
+    ports:
+      - 5679:5678
+    volumes:                       
+      - ./conf1.py:/run/conf.py
+    networks: 
+      default: 
+        ipv4_address: 192.168.118.132
+
+networks: 
+  default:
+    external: 
+      name: genesis  # docker network create --subnet=192.168.118.0/24 genesis
