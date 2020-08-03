@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  couchdb1:
+    image: hyperledger/fabric-couchdb
+    container_name: c1
+    ports:
+      - 5984:5984
+  
+  couchdb2:
+    image: hyperledger/fabric-couchdb
+    container_name: c2
+    ports:
+      - 5985:5984
+
+networks: 
+  default:
+    external: 
+      name: genesis  # docker network create --subnet=192.168.118.0/24 genesis

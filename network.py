@@ -7,6 +7,7 @@ import json
 import random
 import struct
 import fcntl
+import os
 
 from kademlia.network import Server
 from block_chain import BlockChain
@@ -783,9 +784,11 @@ class PeerServer(Singleton):
             self.longest_chain = None
 
     def get_ip(self, ifname='eth0'):  # enp2s0 # ens33
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        return socket.inet_ntoa(
-            fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
+        env_dist = os.environ
+        return env_dist.get('LOCAL_IP')
+        # s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # return socket.inet_ntoa(
+        #     fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
 
     def nodes_find(self, p2p_server):
         log.info("------------")

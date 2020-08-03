@@ -3,6 +3,7 @@ import time
 import socket
 import struct
 import fcntl
+import os
 from block import Block
 from block_header import BlockHeader
 from db import DB
@@ -201,11 +202,13 @@ class BlockChain(object):
     def new_transaction(self, from_addr, to_addr, amount, fee):
         inputs = []
         outputs = []
-        ifname = 'eth0'  # enp2s0   # ens33
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        ip = socket.inet_ntoa(
-            fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
+        # ifname = 'eth0'  # enp2s0   # ens33
+        # s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # ip = socket.inet_ntoa(
+            # fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))[20:24])
 
+        env_dist = os.environ
+        ip = env_dist.get('LOCAL_IP')
         wallets = Wallets()
         from_wallet = wallets[from_addr]
         pub_key = from_wallet.public_key

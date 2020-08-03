@@ -1,8 +1,10 @@
 # coding:utf-8
 import pickle
 
+
 class Wallets(object):
     WALLET_FILE = 'wallet.dat'
+
     def __init__(self, wallet_file=WALLET_FILE):
         self.wallet_file = wallet_file
         try:
@@ -26,6 +28,7 @@ class Wallets(object):
 
     def items(self):
         return self.wallets.items()
+
 
 if __name__ == "__main__":
     from wallet import Wallet
